@@ -1,0 +1,55 @@
+<% content_for :title, "New Project - TechStackr" %>
+
+<div class="card">
+  <h1>Create New Project</h1>
+  <p style="color: #666; margin-bottom: 2rem;">Describe your project and get AI-powered technology recommendations</p>
+
+  <%= form_with model: @project, local: true do |form| %>
+    <% if @project.errors.any? %>
+      <div class="alert">
+        <h4><%= pluralize(@project.errors.count, "error") %> prohibited this project from being saved:</h4>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <% @project.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= form.label :title, "Project Title" %>
+      <%= form.text_field :title, placeholder: "e.g., E-commerce Mobile App", required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :project_type, "Project Type" %>
+      <%= form.select :project_type, 
+          options_for_select([
+            ["Web Application", "web_application"],
+            ["Mobile Application", "mobile_application"],
+            ["Desktop Application", "desktop_application"],
+            ["API/Backend Service", "api_backend"],
+            ["Data Science/ML Project", "data_science"],
+            ["DevOps/Infrastructure", "devops"],
+            ["Other", "other"]
+          ]), 
+          { prompt: "Select project type" },
+          { required: true }
+      %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :description, "Project Description" %>
+      <%= form.text_area :description, 
+          placeholder: "Describe your project requirements, features, expected scale, and any specific technical constraints...",
+          required: true
+      %>
+      <small style="color: #666;">Be as detailed as possible for better recommendations</small>
+    </div>
+
+    <div style="display: flex; gap: 1rem;">
+      <%= form.submit "Create Project", class: "btn btn-success" %>
+      <%= link_to "Cancel", root_path, class: "btn", style: "background: #95a5a6; color: white;" %>
+    </div>
+  <% end %>
+</div>

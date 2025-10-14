@@ -1,0 +1,97 @@
+<% content_for :title, "#{@project.title} - TechStackr" %>
+
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+    <div>
+      <h1><%= @project.title %></h1>
+      <p style="color: #666; margin: 0.5rem 0;"><strong>Type:</strong> <%= @project.project_type.titleize %></p>
+      <p style="margin: 0.5rem 0;">
+        <span class="status-badge status-<%= @project.status %>">
+          <%= @project.status.titleize %>
+        </span>
+      </p>
+    </div>
+    <%= link_to "← Back to Projects", root_path, class: "btn", style: "background: #95a5a6; color: white;" %>
+  </div>
+
+  <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1rem;">Project Description</h3>
+    <p style="line-height: 1.8;"><%= @project.description %></p>
+  </div>
+
+  <% if @project.status == "pending" %>
+    <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
+      <div style="text-align: center; padding: 2rem; background: #e8f4f8; border-radius: 4px;">
+        <h3 style="margin-bottom: 1rem;">Ready to get your recommendations?</h3>
+        <p style="color: #666; margin-bottom: 1.5rem;">Our AI will analyze your project and provide technology stack and team composition recommendations</p>
+        <%= form.submit "Generate AI Recommendations", class: "btn btn-success", style: "font-size: 1.125rem; padding: 1rem 2rem;" %>
+      </div>
+    <% end %>
+  <% elsif @project.status == "processing" %>
+    <div style="text-align: center; padding: 3rem; background: #fff9e6; border-radius: 4px;">
+      <h3 style="margin-bottom: 1rem;">⚙️ Generating Recommendations...</h3>
+      <p style="color: #666;">Please wait while our AI analyzes your project requirements</p>
+    </div>
+  <% elsif @project.status == "failed" %>
+    <div class="alert">
+      <h3>❌ Failed to Generate Recommendations</h3>
+      <p style="margin-top: 0.5rem;">There was an error generating recommendations for this project. Please try again.</p>
+      <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
+        <%= form.submit "Try Again", class: "btn btn-primary", style: "margin-top: 1rem;" %>
+      <% end %>
+    </div>
+  <% elsif @project.status == "completed" && @recommendation %>
+    <div class="card" style="background: #e8f8f5;">
+      <h2 style="margin-bottom: 1rem;">📊 Summary</h2>
+      <p style="font-size: 1.1rem; line-height: 1.8;"><%= @recommendation.summary %></p>
+    </div>
+
+    <% if @recommendation.technologies.any? %>
+      <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">💻 Recommended Technologies</h2>
+        <div class="tech-list">
+          <% @recommendation.technologies.group_by(&:category).each do |category, techs| %>
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #2c3e50;">
+              <%= category %>
+            </h3>
+            <% techs.each do |tech| %>
+              <div class="tech-item">
+                <h4><%= tech.name %></h4>
+                <% if tech.description.present? %>
+                  <p style="color: #666; margin: 0.5rem 0;"><%= tech.description %></p>
+                <% end %>
+                <% if tech.reason.present? %>
+                  <p style="margin-top: 0.5rem;"><strong>Why:</strong> <%= tech.reason %></p>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @recommendation.team_members.any? %>
+      <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">👥 Recommended Team Composition</h2>
+        <div class="team-list">
+          <% @recommendation.team_members.each do |member| %>
+            <div class="team-item">
+              <h4>
+                <%= member.role %>
+                <span style="background: #3498db; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; margin-left: 0.5rem;">
+                  <%= member.count %> <%= member.count == 1 ? 'person' : 'people' %>
+                </span>
+              </h4>
+              <% if member.skills.present? %>
+                <p style="margin: 0.5rem 0;"><strong>Required Skills:</strong> <%= member.skills %></p>
+              <% end %>
+              <% if member.responsibilities.present? %>
+                <p style="margin: 0.5rem 0;"><strong>Responsibilities:</strong> <%= member.responsibilities %></p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
