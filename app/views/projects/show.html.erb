@@ -1,97 +1,168 @@
 <% content_for :title, "#{@project.title} - TechStackr" %>
 
-<div class="card">
-  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
-    <div>
-      <h1><%= @project.title %></h1>
-      <p style="color: #666; margin: 0.5rem 0;"><strong>Type:</strong> <%= @project.project_type.titleize %></p>
-      <p style="margin: 0.5rem 0;">
-        <span class="status-badge status-<%= @project.status %>">
-          <%= @project.status.titleize %>
-        </span>
-      </p>
-    </div>
-    <%= link_to "← Back to Projects", root_path, class: "btn", style: "background: #95a5a6; color: white;" %>
-  </div>
-
-  <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem;">
-    <h3 style="margin-bottom: 1rem;">Project Description</h3>
-    <p style="line-height: 1.8;"><%= @project.description %></p>
-  </div>
-
-  <% if @project.status == "pending" %>
-    <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
-      <div style="text-align: center; padding: 2rem; background: #e8f4f8; border-radius: 4px;">
-        <h3 style="margin-bottom: 1rem;">Ready to get your recommendations?</h3>
-        <p style="color: #666; margin-bottom: 1.5rem;">Our AI will analyze your project and provide technology stack and team composition recommendations</p>
-        <%= form.submit "Generate AI Recommendations", class: "btn btn-success", style: "font-size: 1.125rem; padding: 1rem 2rem;" %>
+<!-- Project Header -->
+<div class="bg-gradient-to-r from-white via-slate-50 to-gray-50 rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
+  <div class="flex justify-between items-start">
+    <div class="flex-1">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= @project.title %></h1>
+      
+      <div class="flex flex-wrap gap-4 mb-4">
+        <div class="flex items-center gap-2 text-gray-600">
+          <span class="text-xl">📁</span>
+          <span class="text-sm font-medium"><%= @project.project_type.gsub('_', ' ').titleize %></span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-600">
+          <span class="text-xl">🏢</span>
+          <span class="text-sm font-medium"><%= @project.industry %></span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-600">
+          <span class="text-xl">👥</span>
+          <span class="text-sm font-medium"><%= @project.estimated_team_size %> <%= @project.estimated_team_size == 1 ? 'person' : 'people' %></span>
+        </div>
       </div>
-    <% end %>
-  <% elsif @project.status == "processing" %>
-    <div style="text-align: center; padding: 3rem; background: #fff9e6; border-radius: 4px;">
-      <h3 style="margin-bottom: 1rem;">⚙️ Generating Recommendations...</h3>
-      <p style="color: #666;">Please wait while our AI analyzes your project requirements</p>
-    </div>
-  <% elsif @project.status == "failed" %>
-    <div class="alert">
-      <h3>❌ Failed to Generate Recommendations</h3>
-      <p style="margin-top: 0.5rem;">There was an error generating recommendations for this project. Please try again.</p>
-      <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
-        <%= form.submit "Try Again", class: "btn btn-primary", style: "margin-top: 1rem;" %>
-      <% end %>
-    </div>
-  <% elsif @project.status == "completed" && @recommendation %>
-    <div class="card" style="background: #e8f8f5;">
-      <h2 style="margin-bottom: 1rem;">📊 Summary</h2>
-      <p style="font-size: 1.1rem; line-height: 1.8;"><%= @recommendation.summary %></p>
-    </div>
 
-    <% if @recommendation.technologies.any? %>
-      <div class="card">
-        <h2 style="margin-bottom: 1.5rem;">💻 Recommended Technologies</h2>
-        <div class="tech-list">
-          <% @recommendation.technologies.group_by(&:category).each do |category, techs| %>
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #2c3e50;">
-              <%= category %>
-            </h3>
+      <div>
+        <% case @project.status %>
+        <% when "pending" %>
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+            <span>⏳</span>
+            <span>Pending</span>
+          </span>
+        <% when "processing" %>
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+            <span>⚙️</span>
+            <span>Processing</span>
+          </span>
+        <% when "completed" %>
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+            <span>✓</span>
+            <span>Completed</span>
+          </span>
+        <% when "failed" %>
+          <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+            <span>✗</span>
+            <span>Failed</span>
+          </span>
+        <% end %>
+      </div>
+    </div>
+    
+    <%= link_to root_path, { class: "bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2" } do %>
+      <span>←</span>
+      <span>Back</span>
+    <% end %>
+  </div>
+</div>
+
+<!-- Project Description -->
+<div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl shadow-sm border border-indigo-100 p-6 mb-6">
+  <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+    <span class="text-2xl">📝</span>
+    <span>Project Description</span>
+  </h3>
+  <p class="text-gray-700 leading-relaxed"><%= @project.description %></p>
+</div>
+
+<!-- Action or Recommendations -->
+<% if @project.status == "pending" %>
+  <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
+    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-200 p-8 text-center">
+      <div class="text-5xl mb-4">🤖</div>
+      <h3 class="text-2xl font-bold text-gray-900 mb-3">Ready for AI Recommendations?</h3>
+      <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+        Our AI will analyze your project details and provide personalized technology stack and team composition recommendations
+      </p>
+      <%= form.submit "Generate AI Recommendations", class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-8 py-4 rounded-lg text-lg transition-all shadow-lg hover:shadow-xl" %>
+    </div>
+  <% end %>
+<% elsif @project.status == "processing" %>
+  <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-sm border border-yellow-200 p-8 text-center">
+    <div class="text-5xl mb-4 animate-pulse">⚙️</div>
+    <h3 class="text-2xl font-bold text-gray-900 mb-3">Generating Recommendations...</h3>
+    <p class="text-gray-600">Please wait while our AI analyzes your project requirements</p>
+  </div>
+<% elsif @project.status == "failed" %>
+  <div class="bg-red-50 rounded-xl shadow-sm border border-red-200 p-8 text-center">
+    <div class="text-5xl mb-4">❌</div>
+    <h3 class="text-2xl font-bold text-red-800 mb-3">Failed to Generate Recommendations</h3>
+    <p class="text-red-600 mb-6">There was an error generating recommendations. Please try again.</p>
+    <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
+      <%= form.submit "Try Again", class: "bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl" %>
+    <% end %>
+  </div>
+<% elsif @project.status == "completed" && @recommendation %>
+  <!-- Summary -->
+  <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-sm border border-green-200 p-6 mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+      <span class="text-3xl">📊</span>
+      <span>Summary</span>
+    </h2>
+    <p class="text-lg text-gray-700 leading-relaxed"><%= @recommendation.summary %></p>
+  </div>
+
+  <!-- Technologies -->
+  <% if @recommendation.technologies.any? %>
+    <div class="bg-white/95 backdrop-blur rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <span class="text-3xl">💻</span>
+        <span>Recommended Technologies</span>
+      </h2>
+      
+      <% @recommendation.technologies.group_by(&:category).each do |category, techs| %>
+        <div class="mb-6 last:mb-0">
+          <h3 class="text-lg font-bold text-indigo-600 mb-3 pb-2 border-b border-gray-200">
+            <%= category %>
+          </h3>
+          <div class="space-y-3">
             <% techs.each do |tech| %>
-              <div class="tech-item">
-                <h4><%= tech.name %></h4>
+              <div class="bg-gradient-to-r from-gray-50 to-indigo-50/30 border-l-4 border-indigo-500 rounded-r-lg p-4">
+                <h4 class="font-bold text-gray-900 text-lg mb-2"><%= tech.name %></h4>
                 <% if tech.description.present? %>
-                  <p style="color: #666; margin: 0.5rem 0;"><%= tech.description %></p>
+                  <p class="text-gray-600 mb-2"><%= tech.description %></p>
                 <% end %>
                 <% if tech.reason.present? %>
-                  <p style="margin-top: 0.5rem;"><strong>Why:</strong> <%= tech.reason %></p>
+                  <p class="text-sm text-gray-700">
+                    <span class="font-semibold text-indigo-600">Why:</span> <%= tech.reason %>
+                  </p>
                 <% end %>
               </div>
             <% end %>
-          <% end %>
+          </div>
         </div>
-      </div>
-    <% end %>
-
-    <% if @recommendation.team_members.any? %>
-      <div class="card">
-        <h2 style="margin-bottom: 1.5rem;">👥 Recommended Team Composition</h2>
-        <div class="team-list">
-          <% @recommendation.team_members.each do |member| %>
-            <div class="team-item">
-              <h4>
-                <%= member.role %>
-                <span style="background: #3498db; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; margin-left: 0.5rem;">
-                  <%= member.count %> <%= member.count == 1 ? 'person' : 'people' %>
-                </span>
-              </h4>
-              <% if member.skills.present? %>
-                <p style="margin: 0.5rem 0;"><strong>Required Skills:</strong> <%= member.skills %></p>
-              <% end %>
-              <% if member.responsibilities.present? %>
-                <p style="margin: 0.5rem 0;"><strong>Responsibilities:</strong> <%= member.responsibilities %></p>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   <% end %>
-</div>
+
+  <!-- Team Composition -->
+  <% if @recommendation.team_members.any? %>
+    <div class="bg-white/95 backdrop-blur rounded-xl shadow-lg border border-gray-200 p-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <span class="text-3xl">👥</span>
+        <span>Recommended Team Composition</span>
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @recommendation.team_members.each do |member| %>
+          <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 rounded-r-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-bold text-gray-900 text-lg"><%= member.role %></h4>
+              <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                <%= member.count %> <%= member.count == 1 ? 'person' : 'people' %>
+              </span>
+            </div>
+            <% if member.skills.present? %>
+              <p class="text-sm text-gray-700 mb-2">
+                <span class="font-semibold text-purple-600">Skills:</span> <%= member.skills %>
+              </p>
+            <% end %>
+            <% if member.responsibilities.present? %>
+              <p class="text-sm text-gray-700">
+                <span class="font-semibold text-purple-600">Responsibilities:</span> <%= member.responsibilities %>
+              </p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

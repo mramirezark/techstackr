@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
-  description: MyText
-  project_type: MyString
-  status: MyString
+  title: E-commerce Platform
+  description: Online shopping platform for retail customers with product catalog and checkout
+  project_type: Web Application
+  industry: E-commerce
+  estimated_team_size: 5
+  status: pending
+  user: one
 
 two:
-  title: MyString
-  description: MyText
-  project_type: MyString
-  status: MyString
+  title: Mobile App
+  description: iOS and Android app for fitness tracking with social features
+  project_type: Mobile App
+  industry: Healthcare
+  estimated_team_size: 8
+  status: completed
+  user: two

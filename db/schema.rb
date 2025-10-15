@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_13_230232) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_14_191303) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,6 +38,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_13_230232) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "industry"
+    t.integer "estimated_team_size"
+    t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
   create_table "recommendations", force: :cascade do |t|
@@ -71,6 +75,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_13_230232) do
     t.index ["recommendation_id"], name: "index_technologies_on_recommendation_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "username"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "role", default: 0, null: false
+    t.index ["role"], name: "index_users_on_role"
+    t.index ["username"], name: "index_users_on_username", unique: true
+  end
+
+  add_foreign_key "projects", "users"
   add_foreign_key "recommendations", "projects"
   add_foreign_key "team_members", "recommendations"
   add_foreign_key "technologies", "recommendations"

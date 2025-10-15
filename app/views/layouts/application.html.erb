@@ -14,119 +14,108 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background: #f5f5f5;
-      }
-      .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-      .navbar {
-        background: #2c3e50;
-        color: white;
-        padding: 1rem 0;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .navbar .container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .navbar h1 { font-size: 1.5rem; margin: 0; }
-      .navbar a { color: white; text-decoration: none; padding: 0.5rem 1rem; }
-      .navbar a:hover { background: rgba(255,255,255,0.1); border-radius: 4px; }
-      .card {
-        background: white;
-        border-radius: 8px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      }
-      .btn {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.2s;
-      }
-      .btn-primary { background: #3498db; color: white; }
-      .btn-primary:hover { background: #2980b9; }
-      .btn-success { background: #27ae60; color: white; }
-      .btn-success:hover { background: #229954; }
-      .form-group { margin-bottom: 1.5rem; }
-      .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-      .form-group input,
-      .form-group textarea,
-      .form-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-family: inherit;
-      }
-      .form-group textarea { min-height: 150px; resize: vertical; }
-      .notice { background: #d4edda; color: #155724; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
-      .alert { background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; }
-      .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-      .project-card {
-        background: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        transition: transform 0.2s;
-      }
-      .project-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-      .status-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 12px;
-        font-size: 0.875rem;
-        font-weight: 600;
-      }
-      .status-pending { background: #ffeaa7; color: #856404; }
-      .status-processing { background: #74b9ff; color: #004085; }
-      .status-completed { background: #55efc4; color: #155724; }
-      .status-failed { background: #ff7675; color: #721c24; }
-      .tech-list, .team-list { margin-top: 1.5rem; }
-      .tech-item, .team-item {
-        background: #f8f9fa;
-        border-left: 4px solid #3498db;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border-radius: 4px;
-      }
-      .tech-item h4, .team-item h4 { margin-bottom: 0.5rem; color: #2c3e50; }
-      .tech-category { display: inline-block; background: #3498db; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; margin-bottom: 0.5rem; }
-    </style>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 min-h-screen">
+    <!-- Top Navigation Bar -->
     <nav class="navbar">
-      <div class="container">
-        <h1>🚀 TechStackr</h1>
-        <div>
-          <%= link_to "Projects", root_path %>
-          <%= link_to "New Project", new_project_path %>
+      <div class="container-custom">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center gap-4">
+            <h1 class="text-2xl font-bold text-white tracking-tight text-shadow">🚀 Tech Stack Recommendations</h1>
+          </div>
+          <div class="flex items-center gap-4">
+            <% if logged_in? %> 
+              <div class="user-info">
+                <span class="text-white font-medium">👤 <%= current_user.username %></span>
+                <% if admin? %>
+                  <span class="user-badge-admin">ADMIN</span>
+                <% end %>
+              </div>
+              <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-ghost btn-sm hover-lift" %>
+            <% else %>
+              <%= link_to "Login", login_path, class: "btn btn-ghost btn-sm hover-lift" %>
+              <%= link_to "Sign Up", signup_path, class: "btn btn-primary btn-sm hover-lift" %>
+            <% end %>
+          </div>
         </div>
       </div>
     </nav>
 
-    <div class="container">
-      <% if notice %>
-        <div class="notice"><%= notice %></div>
-      <% end %>
-      <% if alert %>
-        <div class="alert"><%= alert %></div>
-      <% end %>
-      
-      <%= yield %>
-    </div>
+    <!-- Main Layout with Sidebar -->
+    <% if logged_in? %>
+      <div class="flex min-h-[calc(100vh-4rem)]">
+        <!-- Left Sidebar Navigation -->
+        <aside class="sidebar">
+          <nav class="py-6">
+            <h3 class="nav-section">Navigation</h3>
+            
+            <%= link_to root_path, { class: "#{current_page?(root_path) ? 'nav-link nav-link-active' : 'nav-link'}" } do %>
+              <span class="text-xl">📊</span>
+              <span class="font-medium">Projects</span>
+            <% end %>
+            
+            <% if admin? %>
+              <h3 class="nav-section">Admin</h3>
+              
+              <%= link_to admin_users_path, { class: "#{current_page?(admin_users_path) || request.path.start_with?('/admin/users') ? 'nav-link nav-link-active' : 'nav-link'}" } do %>
+                <span class="text-xl">👥</span>
+                <span class="font-medium">User Management</span>
+              <% end %>
+            <% end %>
+          </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+          <div class="container-custom py-6">
+            <% if notice %>
+              <div class="alert alert-success animate-fade-in">
+                <div class="flex items-center gap-2">
+                  <span class="alert-icon">✓</span>
+                  <span><%= notice %></span>
+                </div>
+              </div>
+            <% end %>
+            <% if alert %>
+              <div class="alert alert-error animate-fade-in">
+                <div class="flex items-center gap-2">
+                  <span class="alert-icon">⚠</span>
+                  <span><%= alert %></span>
+                </div>
+              </div>
+            <% end %>
+            
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    <% else %>
+      <!-- No sidebar for logged out users -->
+      <div class="min-h-screen bg-gradient-to-br from-slate-900/30 via-indigo-900/30 to-purple-900/30 backdrop-blur-sm">
+        <div class="max-w-md mx-auto pt-12 px-4">
+          <% if notice %>
+            <div class="alert alert-success animate-fade-in">
+              <div class="flex items-center gap-2">
+                <span class="alert-icon">✓</span>
+                <span><%= notice %></span>
+              </div>
+            </div>
+          <% end %>
+          <% if alert %>
+            <div class="alert alert-error animate-fade-in">
+              <div class="flex items-center gap-2">
+                <span class="alert-icon">⚠</span>
+                <span><%= alert %></span>
+              </div>
+            </div>
+          <% end %>
+          
+          <%= yield %>
+        </div>
+      </div>
+    <% end %>
   </body>
 </html>

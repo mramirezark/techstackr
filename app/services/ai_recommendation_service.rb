@@ -42,17 +42,19 @@ class AiRecommendationService
 
       Project Title: #{@project.title}
       Project Type: #{@project.project_type}
+      Industry: #{@project.industry}
+      Estimated Team Size: #{@project.estimated_team_size} people
       Description: #{@project.description}
 
       Please provide your response in the following JSON format:
       {
-        "summary": "Brief overview of recommendations",
+        "summary": "Brief overview of recommendations tailored to the #{@project.industry} industry",
         "technologies": [
           {
             "name": "Technology name",
             "category": "Category (e.g., Frontend, Backend, Database, DevOps, Testing)",
             "description": "Brief description",
-            "reason": "Why this technology is recommended"
+            "reason": "Why this technology is recommended for this #{@project.industry} project"
           }
         ],
         "team_composition": [
@@ -66,7 +68,12 @@ class AiRecommendationService
         "additional_notes": "Any additional recommendations or considerations"
       }
 
-      Focus on modern, industry-standard technologies appropriate for the project type and scale.
+      Focus on modern, industry-standard technologies appropriate for:
+      - The #{@project.industry} industry
+      - A team of #{@project.estimated_team_size} people
+      - The #{@project.project_type} project type
+
+      Ensure the team composition aligns with the estimated team size of #{@project.estimated_team_size}.
     PROMPT
   end
 
