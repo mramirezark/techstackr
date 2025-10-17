@@ -1,29 +1,60 @@
-# PostgreSQL configuration for TechStackr
-# Supports Docker and local PostgreSQL installations
+# Database configuration for TechStackr
+# 
+# Usage:
+#   - Set DATABASE_URL for any environment to use that connection
+#   - Or use individual environment variables (same names for both PostgreSQL and Supabase)
 #
 # Environment variables:
-#   DB_HOST: PostgreSQL host (default: localhost)
-#   DB_PORT: PostgreSQL port (default: 5432)
-#   DB_USERNAME: PostgreSQL username (default: postgres)
-#   DB_PASSWORD: PostgreSQL password (default: postgres)
+#   DATABASE_URL: Full connection string (overrides everything)
+#   DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME: Database settings
+#   DB_SSL: Set to "require" for Supabase/cloud databases
 
 default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  <% if ENV["DATABASE_URL"] %>
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
   host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
   port: <%= ENV.fetch("DB_PORT") { 5432 } %>
   username: <%= ENV.fetch("DB_USERNAME") { "postgres" } %>
   password: <%= ENV.fetch("DB_PASSWORD") { "postgres" } %>
-
-development:
-  <<: *default
   database: <%= ENV.fetch("DB_NAME") { "techstackr" } %>_development
+  <% if ENV["DB_SSL"] %>
+  sslmode: <%= ENV["DB_SSL"] %>
+  <% end %>
+  <% end %>
 
 test:
   <<: *default
+  <% if ENV["DATABASE_URL"] %>
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
+  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
+  port: <%= ENV.fetch("DB_PORT") { 5432 } %>
+  username: <%= ENV.fetch("DB_USERNAME") { "postgres" } %>
+  password: <%= ENV.fetch("DB_PASSWORD") { "postgres" } %>
   database: <%= ENV.fetch("DB_NAME") { "techstackr" } %>_test
+  <% if ENV["DB_SSL"] %>
+  sslmode: <%= ENV["DB_SSL"] %>
+  <% end %>
+  <% end %>
 
 production:
   <<: *default
+  <% if ENV["DATABASE_URL"] %>
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
+  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
+  port: <%= ENV.fetch("DB_PORT") { 5432 } %>
+  username: <%= ENV.fetch("DB_USERNAME") { "postgres" } %>
+  password: <%= ENV.fetch("DB_PASSWORD") { "postgres" } %>
   database: <%= ENV.fetch("DB_NAME") { "techstackr" } %>_production
+  <% if ENV["DB_SSL"] %>
+  sslmode: <%= ENV["DB_SSL"] %>
+  <% end %>
+  <% end %>

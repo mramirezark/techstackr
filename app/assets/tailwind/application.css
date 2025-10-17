@@ -580,6 +580,62 @@
   .pagination .gap {
     @apply text-gray-400 px-2;
   }
+
+  /* ===== PROGRESS MODAL ANIMATIONS ===== */
+  .modal-fade-in {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+
+  .modal-scale-in {
+    animation: modalScaleIn 0.3s ease-out;
+  }
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modalScaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .progress-bar {
+    transition: width 0.5s ease-out;
+  }
+
+  .step-icon {
+    transition: all 0.3s ease-out;
+  }
+
+  /* ===== NOTIFICATION STYLES ===== */
+  .notification-enter {
+    transform: translateX(100%);
+  }
+
+  .notification-enter-active {
+    transform: translateX(0);
+    transition: transform 0.3s ease-out;
+  }
+
+  .notification-exit {
+    transform: translateX(0);
+  }
+
+  .notification-exit-active {
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in;
+  }
   
   /* ===== ARGON DASHBOARD HEADERS ===== */
   .dashboard-header {

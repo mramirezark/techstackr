@@ -39,6 +39,9 @@ gem "bootsnap", require: false
 # Pagination
 gem "kaminari"
 
+# Supabase for production database
+gem "supabase"
+
 # OpenAI API for AI recommendations
 gem "ruby-openai"
 

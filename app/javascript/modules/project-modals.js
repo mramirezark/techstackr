@@ -292,6 +292,9 @@ export class ProjectModals {
       // Show loading state with progress
       modalContent.innerHTML = this.getProgressHTML();
       
+      // Update project status to processing in the table
+      this.updateProjectStatusInTable(projectId, 'processing');
+      
       // Simulate progress animation
       this.animateProgress(modalContent);
       
@@ -317,43 +320,60 @@ export class ProjectModals {
           
           // Show success state briefly
           modalContent.innerHTML = `
-            <div class="bg-slate-700/50 rounded-lg p-8 text-center">
-              <div class="text-6xl mb-6">✅</div>
-              <h3 class="text-2xl font-bold text-white mb-4">Recommendations Generated!</h3>
-              <p class="text-gray-300 mb-6">AI has successfully analyzed your project and created personalized recommendations.</p>
+            <div class="modal-overlay modal-fade-in">
+              <div class="modal-container modal-scale-in">
+                <div class="modal-header">
+                  <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-3">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <span class="text-green-600 text-lg">✅</span>
+                    </div>
+                    Recommendations Generated!
+                  </h3>
+                  <button class="modal-close text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="modal-body">
+                  <div class="text-center">
+                    <div class="text-6xl mb-6">✅</div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Recommendations Generated!</h3>
+                    <p class="text-gray-600 mb-8">AI has successfully analyzed your project and created personalized recommendations.</p>
+                  </div>
+                </div>
+                
+                <div class="modal-footer">
+                  <button class="btn btn-ghost" data-action="click->modal#close">Close</button>
+                </div>
+              </div>
             </div>
           `;
           
-          // Wait a moment then reload the modal with new data
-          setTimeout(async () => {
-            try {
-              const modalResponse = await fetch(`/projects/${projectId}/modal_details`, {
-                method: 'GET',
-                headers: {
-                  'Accept': 'text/html',
-                  'X-Requested-With': 'XMLHttpRequest'
-                }
-              });
-              
-              if (modalResponse.ok) {
-                const html = await modalResponse.text();
-                const modalContainer = document.getElementById('modal-content');
-                if (modalContainer) {
-                  modalContainer.innerHTML = html;
-                  // Re-attach event listeners
-                  this.attachModalListeners();
-                }
-              }
-            } catch (error) {
-              console.error('Error reloading modal:', error);
+          // Update the projects table
+          this.updateProjectStatusInTable(projectId, 'completed');
+          
+          // Wait a moment then close modal and show success message
+          setTimeout(() => {
+            const modalContainer = document.getElementById('modal-content');
+            if (modalContainer) {
+              ModalUtils.hideModal(modalContainer.querySelector('.modal-overlay'));
             }
-          }, 1500);
+            
+            // Show success notification
+            this.showSuccessNotification('Recommendations generated successfully!');
+          }, 2000);
           
         } else {
+          // Update project status to failed in the table
+          this.updateProjectStatusInTable(projectId, 'failed');
           this.showErrorState(modalContent);
         }
       } catch (error) {
         console.error('Error generating recommendations:', error);
+        // Update project status to failed in the table
+        this.updateProjectStatusInTable(projectId, 'failed');
         this.showErrorState(modalContent);
       }
     });
@@ -361,39 +381,70 @@ export class ProjectModals {
 
   getProgressHTML() {
     return `
-      <div class="bg-slate-700/50 rounded-lg p-8 text-center">
-        <div class="text-6xl mb-6 animate-pulse">🤖</div>
-        <h3 class="text-2xl font-bold text-white mb-4">Generating AI Recommendations</h3>
-        <p class="text-gray-300 mb-6">Our AI is analyzing your project and creating personalized technology recommendations...</p>
-        
-        <!-- Progress Animation -->
-        <div class="relative w-full max-w-md mx-auto mb-6">
-          <div class="w-full bg-slate-600 rounded-full h-3">
-            <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full progress-bar" style="width: 0%"></div>
+      <div class="modal-overlay modal-fade-in">
+        <div class="modal-container modal-scale-in">
+          <div class="modal-header">
+            <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 text-lg">🤖</span>
+              </div>
+              Generating AI Recommendations
+            </h3>
+            <button class="modal-close text-gray-400 hover:text-gray-600 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
           </div>
-          <div class="flex justify-between text-xs text-gray-400 mt-2">
-            <span>Analyzing...</span>
-            <span class="progress-text">0%</span>
+          
+          <div class="modal-body">
+            <div class="text-center mb-8">
+              <div class="text-6xl mb-4 animate-pulse">🤖</div>
+              <p class="text-gray-600 text-lg">Our AI is analyzing your project and creating personalized technology recommendations...</p>
+            </div>
+            
+            <!-- Progress Animation -->
+            <div class="relative w-full max-w-md mx-auto mb-8">
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full progress-bar transition-all duration-500 ease-out" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between text-sm text-gray-500 mt-3">
+                <span class="progress-label">Analyzing...</span>
+                <span class="progress-text font-semibold">0%</span>
+              </div>
+            </div>
+            
+            <!-- Progress Steps -->
+            <div class="space-y-4 max-w-lg mx-auto">
+              <div class="flex items-center progress-step" data-step="1">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-4 step-icon transition-all duration-300">
+                  <span class="text-sm font-semibold text-gray-600">1</span>
+                </div>
+                <span class="text-gray-600 font-medium">Analyzing project requirements...</span>
+              </div>
+              <div class="flex items-center progress-step" data-step="2">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-4 step-icon transition-all duration-300">
+                  <span class="text-sm font-semibold text-gray-600">2</span>
+                </div>
+                <span class="text-gray-500 font-medium">Selecting technology stack...</span>
+              </div>
+              <div class="flex items-center progress-step" data-step="3">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-4 step-icon transition-all duration-300">
+                  <span class="text-sm font-semibold text-gray-600">3</span>
+                </div>
+                <span class="text-gray-500 font-medium">Determining team composition...</span>
+              </div>
+              <div class="flex items-center progress-step" data-step="4">
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-4 step-icon transition-all duration-300">
+                  <span class="text-sm font-semibold text-gray-600">4</span>
+                </div>
+                <span class="text-gray-500 font-medium">Generating recommendations...</span>
+              </div>
+            </div>
           </div>
-        </div>
-        
-        <!-- Progress Steps -->
-        <div class="space-y-3 text-left max-w-md mx-auto">
-          <div class="flex items-center text-gray-300 progress-step" data-step="1">
-            <div class="w-6 h-6 rounded-full bg-slate-600 flex items-center justify-center mr-3 step-icon">1</div>
-            <span>Analyzing project requirements...</span>
-          </div>
-          <div class="flex items-center text-gray-500 progress-step" data-step="2">
-            <div class="w-6 h-6 rounded-full bg-slate-600 flex items-center justify-center mr-3 step-icon">2</div>
-            <span>Selecting technology stack...</span>
-          </div>
-          <div class="flex items-center text-gray-500 progress-step" data-step="3">
-            <div class="w-6 h-6 rounded-full bg-slate-600 flex items-center justify-center mr-3 step-icon">3</div>
-            <span>Determining team composition...</span>
-          </div>
-          <div class="flex items-center text-gray-500 progress-step" data-step="4">
-            <div class="w-6 h-6 rounded-full bg-slate-600 flex items-center justify-center mr-3 step-icon">4</div>
-            <span>Generating recommendations...</span>
+          
+          <div class="modal-footer">
+            <button class="btn btn-ghost" data-action="click->modal#close">Close</button>
           </div>
         </div>
       </div>
@@ -403,6 +454,7 @@ export class ProjectModals {
   animateProgress(modalContent) {
     const progressBar = modalContent.querySelector('.progress-bar');
     const progressText = modalContent.querySelector('.progress-text');
+    const progressLabel = modalContent.querySelector('.progress-label');
     const progressSteps = modalContent.querySelectorAll('.progress-step');
     
     let progress = 0;
@@ -413,20 +465,41 @@ export class ProjectModals {
       if (progressBar) progressBar.style.width = progress + '%';
       if (progressText) progressText.textContent = Math.round(progress) + '%';
       
+      // Update progress label
+      if (progressLabel) {
+        if (progress < 25) progressLabel.textContent = 'Analyzing...';
+        else if (progress < 50) progressLabel.textContent = 'Selecting...';
+        else if (progress < 75) progressLabel.textContent = 'Determining...';
+        else progressLabel.textContent = 'Generating...';
+      }
+      
       // Update step indicators
       const currentStep = Math.floor((progress / 100) * 4);
       progressSteps.forEach((step, index) => {
-        if (index <= currentStep) {
-          step.classList.remove('text-gray-500');
-          step.classList.add('text-blue-400');
-          const icon = step.querySelector('.step-icon');
-          icon.classList.remove('bg-slate-600');
+        const stepText = step.querySelector('span:last-child');
+        const icon = step.querySelector('.step-icon');
+        
+        if (index < currentStep) {
+          // Completed step
+          stepText.classList.remove('text-gray-500');
+          stepText.classList.add('text-green-600', 'font-semibold');
+          icon.classList.remove('bg-gray-200');
+          icon.classList.add('bg-green-500');
+          icon.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+        } else if (index === currentStep) {
+          // Current step
+          stepText.classList.remove('text-gray-500');
+          stepText.classList.add('text-blue-600', 'font-semibold');
+          icon.classList.remove('bg-gray-200');
           icon.classList.add('bg-blue-500');
-          if (index === currentStep) {
-            icon.innerHTML = '⏳';
-          } else {
-            icon.innerHTML = '✓';
-          }
+          icon.innerHTML = '<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>';
+        } else {
+          // Pending step
+          stepText.classList.remove('text-green-600', 'text-blue-600', 'font-semibold');
+          stepText.classList.add('text-gray-500');
+          icon.classList.remove('bg-green-500', 'bg-blue-500');
+          icon.classList.add('bg-gray-200');
+          icon.innerHTML = `<span class="text-sm font-semibold text-gray-600">${index + 1}</span>`;
         }
       });
     }, 800);
@@ -437,13 +510,108 @@ export class ProjectModals {
 
   showErrorState(modalContent) {
     modalContent.innerHTML = `
-      <div class="bg-slate-700/50 rounded-lg p-8 text-center">
-        <div class="text-6xl mb-6">❌</div>
-        <h3 class="text-2xl font-bold text-white mb-4">Generation Failed</h3>
-        <p class="text-gray-300 mb-6">There was an error generating recommendations. Please try again.</p>
-        <button onclick="location.reload()" class="btn btn-primary">Try Again</button>
+      <div class="modal-overlay modal-fade-in">
+        <div class="modal-container modal-scale-in">
+          <div class="modal-header">
+            <h3 class="text-xl font-semibold text-gray-900 flex items-center gap-3">
+              <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                <span class="text-red-600 text-lg">❌</span>
+              </div>
+              Generation Failed
+            </h3>
+            <button class="modal-close text-gray-400 hover:text-gray-600 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="text-center">
+              <div class="text-6xl mb-6">❌</div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Generation Failed</h3>
+              <p class="text-gray-600 mb-8">There was an error generating recommendations. Please try again.</p>
+              <button onclick="location.reload()" class="btn btn-primary">Try Again</button>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button class="btn btn-ghost" data-action="click->modal#close">Close</button>
+          </div>
+        </div>
       </div>
     `;
+  }
+
+  updateProjectStatusInTable(projectId, status) {
+    // Find the project row in the table
+    const projectRow = document.querySelector(`[data-project-id="${projectId}"]`)?.closest('tr');
+    if (!projectRow) return;
+
+    // Find the status cell (5th column, index 4)
+    const statusCell = projectRow.children[4];
+    if (!statusCell) return;
+
+    // Update the status badge
+    let statusBadge = '';
+    switch (status) {
+      case 'pending':
+        statusBadge = '<span class="badge badge-warning badge-sm">⏳ Pending</span>';
+        break;
+      case 'processing':
+        statusBadge = '<span class="badge badge-info badge-sm">⚙️ Processing</span>';
+        break;
+      case 'completed':
+        statusBadge = '<span class="badge badge-success badge-sm">✓ Completed</span>';
+        break;
+      case 'failed':
+        statusBadge = '<span class="badge badge-danger badge-sm">✗ Failed</span>';
+        break;
+    }
+
+    if (statusBadge) {
+      statusCell.innerHTML = statusBadge;
+      
+      // Add a subtle animation to highlight the change
+      statusCell.classList.add('animate-pulse');
+      setTimeout(() => {
+        statusCell.classList.remove('animate-pulse');
+      }, 2000);
+    }
+  }
+
+  showSuccessNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+    notification.innerHTML = `
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <span class="font-semibold">${message}</span>
+      </div>
+    `;
+
+    // Add to page
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+      notification.classList.remove('translate-x-full');
+    }, 100);
+
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+      notification.classList.add('translate-x-full');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 4000);
   }
 
   attachModalListeners() {
