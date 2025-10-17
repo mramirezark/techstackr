@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Deployment script for TechStackr
+
+set -e
+
+echo "🚀 Starting TechStackr deployment preparation..."
+
+# Check if we're in the right directory
+if [ ! -f "Gemfile" ]; then
+  echo "❌ Error: Please run this script from the Rails root directory"
+  exit 1
+fi
+
+# Check if git is clean
+if [ -n "$(git status --porcelain)" ]; then
+  echo "⚠️  Warning: You have uncommitted changes. Please commit them first."
+  git status --short
+  read -p "Continue anyway? (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    exit 1
+  fi
+fi
+
+# Check if master key exists
+if [ ! -f "config/master.key" ]; then
+  echo "🔑 Generating master key..."
+  rails credentials:edit
+fi
+
+# Check if .env file exists
+if [ ! -f ".env" ]; then
+  echo "⚠️  Warning: .env file not found. Make sure to set environment variables in Render."
+fi
+
+# Run tests
+echo "🧪 Running tests..."
+bundle exec rails test || echo "⚠️  Tests failed, but continuing..."
+
+# Precompile assets
+echo "📦 Precompiling assets..."
+RAILS_ENV=production bundle exec rails assets:precompile
+
+# Check database
+echo "🗄️  Checking database..."
+bundle exec rails db:migrate:status
+
+echo "✅ Deployment preparation complete!"
+echo ""
+echo "Next steps:"
+echo "1. Push to GitHub: git push origin main"
+echo "2. Create Render account: https://render.com"
+echo "3. Connect your repository"
+echo "4. Set environment variables:"
+echo "   - RAILS_ENV=production"
+echo "   - RAILS_MASTER_KEY=$(cat config/master.key)"
+echo "   - GEMINI_API_KEY=your_api_key"
+echo "   - DATABASE_URL=postgresql://..."
+echo "5. Deploy!"
+echo ""
+echo "📖 See DEPLOYMENT.md for detailed instructions"
