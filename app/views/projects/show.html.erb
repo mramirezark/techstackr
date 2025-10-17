@@ -1,21 +1,22 @@
 <% content_for :title, "#{@project.title} - TechStackr" %>
 
 <!-- Project Header -->
-<div class="bg-gradient-to-r from-white via-slate-50 to-gray-50 rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
+<div class="dashboard-header">
+  <div class="breadcrumb">Pages / Projects</div>
   <div class="flex justify-between items-start">
     <div class="flex-1">
-      <h1 class="text-3xl font-bold text-gray-900 mb-4"><%= @project.title %></h1>
+      <h1 class="page-title mb-4"><%= @project.title %></h1>
       
       <div class="flex flex-wrap gap-4 mb-4">
-        <div class="flex items-center gap-2 text-gray-600">
+        <div class="flex items-center gap-2 text-blue-100">
           <span class="text-xl">📁</span>
           <span class="text-sm font-medium"><%= @project.project_type.gsub('_', ' ').titleize %></span>
         </div>
-        <div class="flex items-center gap-2 text-gray-600">
+        <div class="flex items-center gap-2 text-blue-100">
           <span class="text-xl">🏢</span>
           <span class="text-sm font-medium"><%= @project.industry %></span>
         </div>
-        <div class="flex items-center gap-2 text-gray-600">
+        <div class="flex items-center gap-2 text-blue-100">
           <span class="text-xl">👥</span>
           <span class="text-sm font-medium"><%= @project.estimated_team_size %> <%= @project.estimated_team_size == 1 ? 'person' : 'people' %></span>
         </div>
@@ -72,7 +73,7 @@
       <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
         Our AI will analyze your project details and provide personalized technology stack and team composition recommendations
       </p>
-      <%= form.submit "Generate AI Recommendations", class: "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-8 py-4 rounded-lg text-lg transition-all shadow-lg hover:shadow-xl" %>
+      <%= form.submit "Generate AI Recommendations", class: "btn btn-primary btn-lg hover-lift" %>
     </div>
   <% end %>
 <% elsif @project.status == "processing" %>
@@ -87,7 +88,7 @@
     <h3 class="text-2xl font-bold text-red-800 mb-3">Failed to Generate Recommendations</h3>
     <p class="text-red-600 mb-6">There was an error generating recommendations. Please try again.</p>
     <%= form_with url: project_recommendation_path(@project), method: :post, local: true do |form| %>
-      <%= form.submit "Try Again", class: "bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition-all shadow-lg hover:shadow-xl" %>
+      <%= form.submit "Try Again", class: "btn btn-danger btn-lg hover-lift" %>
     <% end %>
   </div>
 <% elsif @project.status == "completed" && @recommendation %>

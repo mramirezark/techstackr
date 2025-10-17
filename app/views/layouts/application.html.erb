@@ -18,18 +18,18 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 min-h-screen">
+  <body class="bg-gray-50 min-h-screen">
     <!-- Top Navigation Bar -->
     <nav class="navbar">
       <div class="container-custom">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center gap-4">
-            <h1 class="text-2xl font-bold text-white tracking-tight text-shadow">🚀 Tech Stack Recommendations</h1>
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight">🚀 Tech Stack Recommendations</h1>
           </div>
           <div class="flex items-center gap-4">
             <% if logged_in? %> 
               <div class="user-info">
-                <span class="text-white font-medium">👤 <%= current_user.username %></span>
+                <span class="text-gray-700 font-medium">👤 <%= current_user.username %></span>
                 <% if admin? %>
                   <span class="user-badge-admin">ADMIN</span>
                 <% end %>
@@ -55,6 +55,11 @@
             <%= link_to root_path, { class: "#{current_page?(root_path) ? 'nav-link nav-link-active' : 'nav-link'}" } do %>
               <span class="text-xl">📊</span>
               <span class="font-medium">Projects</span>
+            <% end %>
+
+            <%= link_to dashboard_path, { class: "#{current_page?(dashboard_path) ? 'nav-link nav-link-active' : 'nav-link'}" } do %>
+              <span class="text-xl">🤖</span>
+              <span class="font-medium">AI Dashboard</span>
             <% end %>
             
             <% if admin? %>

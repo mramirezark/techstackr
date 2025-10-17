@@ -1,4 +1,4 @@
-class CreateTechnologies < ActiveRecord::Migration[7.2]
+class CreateTechnologies < ActiveRecord::Migration[8.0]
   def change
     create_table :technologies do |t|
       t.references :recommendation, null: false, foreign_key: true

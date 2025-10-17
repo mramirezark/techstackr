@@ -1,4 +1,4 @@
-class CreateRecommendations < ActiveRecord::Migration[7.2]
+class CreateRecommendations < ActiveRecord::Migration[8.0]
   def change
     create_table :recommendations do |t|
       t.references :project, null: false, foreign_key: true

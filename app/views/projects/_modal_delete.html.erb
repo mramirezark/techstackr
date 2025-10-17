@@ -1,0 +1,93 @@
+<div class="modal-overlay hidden" data-modal-target="overlay" data-action="click->modal#closeOnBackdrop">
+  <div class="modal-container modal-scale-in" data-modal-target="container" style="max-width: 500px; width: 95vw;">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="text-2xl">⚠️</span>
+        <span>Delete Project</span>
+      </div>
+      <button class="modal-close" data-action="click->modal#close" aria-label="Close modal">
+        <span class="text-xl">✕</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="text-center mb-6">
+        <div class="text-6xl mb-4">📋</div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2"><%= @project.title %></h3>
+        <div class="flex justify-center gap-2 mb-4">
+          <span class="badge badge-primary badge-lg"><%= @project.industry %></span>
+          <span class="badge badge-secondary badge-lg"><%= @project.project_type.gsub('_', ' ').titleize %></span>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+        <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Project Details</h4>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Team Size:</span>
+            <span class="text-gray-900 font-semibold"><%= @project.estimated_team_size %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Status:</span>
+            <span class="text-gray-900 font-semibold"><%= @project.status.titleize %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Created:</span>
+            <span class="text-gray-900 font-semibold"><%= @project.created_at.strftime("%b %d, %Y") %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Recommendations:</span>
+            <span class="text-gray-900 font-semibold"><%= @project.recommendation.present? ? 'Yes' : 'No' %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-red-50 border border-red-300 rounded-lg p-4 mb-6">
+        <div class="flex items-start gap-3">
+          <span class="text-red-600 text-xl">⚠️</span>
+          <div class="flex-1">
+            <h4 class="font-semibold text-red-800 mb-2">Warning: This action cannot be undone!</h4>
+            <ul class="text-red-700 text-sm space-y-1">
+              <li>• All project data will be permanently deleted</li>
+              <% if @project.recommendation.present? %>
+                <li>• All AI recommendations will be lost</li>
+                <li>• <%= @project.recommendation.technologies.count %> technology recommendations will be removed</li>
+                <li>• <%= @project.recommendation.team_members.count %> team member recommendations will be removed</li>
+              <% end %>
+              <li>• This project will be completely removed from your account</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <p class="text-gray-700 mb-4">Are you sure you want to delete <strong class="text-gray-900">"<%= @project.title %>"</strong>?</p>
+        <p class="text-sm text-gray-600">Type the project title to confirm deletion</p>
+      </div>
+
+      <div class="mt-4">
+        <input type="text" 
+               id="confirm-delete-input" 
+               placeholder="Type project title to confirm"
+               class="form-input text-center"
+               autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-action="click->modal#close">Cancel</button>
+      <button type="button" 
+              class="btn btn-danger btn-lg hover-lift" 
+              id="confirm-delete-btn"
+              data-project-id="<%= @project.id %>"
+              data-project-title="<%= @project.title %>"
+              disabled>
+        <span>Delete Project</span>
+      </button>
+    </div>
+  </div>
+</div>
+

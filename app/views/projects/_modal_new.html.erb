@@ -1,0 +1,101 @@
+<div class="modal-overlay hidden" data-modal-target="overlay" data-action="click->modal#closeOnBackdrop">
+  <div class="modal-container modal-scale-in" data-modal-target="container" style="max-width: 900px; width: 95vw;">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="text-2xl">✨</span>
+        <span>Create New Project</span>
+      </div>
+      <button class="modal-close" data-action="click->modal#close" aria-label="Close modal">
+        <span class="text-xl">✕</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="text-center mb-6">
+        <p class="text-gray-600">Describe your project and get AI-powered technology recommendations</p>
+      </div>
+
+      <%= form_with model: @project, local: false, id: "new-project-form", class: "form-group" do |form| %>
+        <div id="form-errors" class="hidden alert alert-error mb-6">
+          <div class="flex items-start gap-3">
+            <span class="alert-icon">⚠️</span>
+            <div class="flex-1">
+              <h4 class="font-semibold mb-2">Please fix the following errors:</h4>
+              <ul id="error-list" class="list-disc list-inside space-y-1"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <%= form.label :title, "Project Title", class: "form-label form-label-required" %>
+            <%= form.text_field :title, placeholder: "e.g., E-commerce Mobile App", required: true, class: "form-input hover-lift" %>
+          </div>
+
+          <div class="form-field">
+            <%= form.label :industry, "Industry", class: "form-label form-label-required" %>
+            <%= form.select :industry, 
+                options_for_select(Project::INDUSTRIES), 
+                { prompt: "Select industry" },
+                { required: true, class: "form-select hover-lift" }
+            %>
+            <p class="form-help">Helps tailor recommendations to your domain</p>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <%= form.label :project_type, "Project Type", class: "form-label form-label-required" %>
+            <%= form.select :project_type, 
+                options_for_select([
+                  ["Web Application", "web_application"],
+                  ["Mobile Application", "mobile_application"],
+                  ["Desktop Application", "desktop_application"],
+                  ["API/Backend Service", "api_backend"],
+                  ["Data Science/ML Project", "data_science"],
+                  ["DevOps/Infrastructure", "devops"],
+                  ["Other", "other"]
+                ]), 
+                { prompt: "Select project type" },
+                { required: true, class: "form-select hover-lift" }
+            %>
+          </div>
+
+          <div class="form-field">
+            <%= form.label :estimated_team_size, "Estimated Team Size", class: "form-label form-label-required" %>
+            <%= form.number_field :estimated_team_size, 
+                placeholder: "e.g., 5",
+                min: 1,
+                max: 1000,
+                required: true,
+                class: "form-input hover-lift"
+            %>
+            <p class="form-help">Number of team members expected</p>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :description, "Project Description", class: "form-label form-label-required" %>
+          <%= form.text_area :description, 
+              placeholder: "Describe your project requirements, features, expected scale, and any specific technical constraints...",
+              required: true,
+              rows: 6,
+              class: "form-textarea hover-lift"
+          %>
+          <p class="form-help">Be as detailed as possible for better AI recommendations</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-action="click->modal#close">Cancel</button>
+      <button type="submit" form="new-project-form" class="btn btn-primary btn-lg hover-lift" id="submit-project-btn">
+        <span>Create Project</span>
+      </button>
+    </div>
+  </div>
+</div>
+

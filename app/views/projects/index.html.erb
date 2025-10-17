@@ -3,17 +3,19 @@
 <!-- Modal Container -->
 <div id="modal-content"></div>
 
-<div class="card-header animate-fade-in">
+<!-- New Project Modal Container -->
+<div id="new-project-modal-content"></div>
+
+<div class="dashboard-header animate-fade-in">
+  <div class="breadcrumb">Pages / Projects</div>
   <div class="flex justify-between items-center">
-    <div>
-      <h1 class="text-gradient text-3xl font-bold mb-2 text-shadow">Your Projects</h1>
-      <p class="text-gray-300">Create projects and get AI-powered technology stack recommendations</p>
-    </div>
-    <%= link_to new_project_path, { class: "btn btn-primary btn-lg hover-lift" } do %>
+    <h1 class="page-title">Your Projects</h1>
+    <button class="btn btn-accent btn-lg hover-lift" data-action="showNewProjectModal">
       <span class="text-xl">➕</span>
-      <span>New Project</span>
-    <% end %>
+      <span>Project</span>
+    </button>
   </div>
+  <p class="text-blue-100 mt-2">Create projects and get AI-powered technology stack recommendations</p>
 </div>
 
 <% if @projects.any? %>
@@ -36,7 +38,7 @@
             <tr class="table-row animate-fade-in" style="animation-delay: <%= index * 0.1 %>s;">
               <td class="table-cell-title">
                 <div class="flex flex-col">
-                  <span class="font-semibold text-white text-sm"><%= project.title %></span>
+                  <span class="font-semibold text-gray-900 text-sm"><%= project.title %></span>
                   <span class="table-cell-description"><%= truncate(project.description, length: 60) %></span>
                 </div>
               </td>
@@ -52,8 +54,8 @@
               </td>
               <td class="table-cell-compact text-center">
                 <div class="flex flex-col items-center">
-                  <span class="text-sm font-bold text-white"><%= project.estimated_team_size %></span>
-                  <span class="text-xs text-gray-400"><%= project.estimated_team_size == 1 ? 'person' : 'people' %></span>
+                  <span class="text-sm font-bold text-gray-900"><%= project.estimated_team_size %></span>
+                  <span class="text-xs text-gray-600"><%= project.estimated_team_size == 1 ? 'person' : 'people' %></span>
                 </div>
               </td>
               <td class="table-cell-compact text-center">
@@ -69,16 +71,37 @@
                 <% end %>
               </td>
               <td class="table-cell-compact">
-                <span class="text-xs text-gray-400"><%= project.created_at.strftime("%b %d") %></span>
+                <span class="text-xs text-gray-600"><%= project.created_at.strftime("%b %d, %Y") %></span>
               </td>
               <td class="table-cell-compact text-center">
-                <button 
-                  class="btn btn-ghost btn-sm hover-lift" 
-                  data-action="showProjectDetails"
-                  data-project-id="<%= project.id %>"
-                >
-                  <span>👁️</span>
-                </button>
+                <div class="flex justify-center gap-1">
+                  <button 
+                    class="btn btn-ghost btn-sm hover-lift" 
+                    data-action="showProjectDetails"
+                    data-project-id="<%= project.id %>"
+                    title="View Details"
+                  >
+                    <span>👁️</span>
+                  </button>
+                  <button 
+                    class="btn btn-ghost btn-sm hover-lift" 
+                    data-action="showEditProjectModal"
+                    data-project-id="<%= project.id %>"
+                    data-project-title="<%= project.title %>"
+                    title="Edit Project"
+                  >
+                    <span>✏️</span>
+                  </button>
+                  <button 
+                    class="btn btn-ghost btn-sm hover-lift text-red-600" 
+                    data-action="showDeleteProjectModal"
+                    data-project-id="<%= project.id %>"
+                    data-project-title="<%= project.title %>"
+                    title="Delete Project"
+                  >
+                    <span>🗑️</span>
+                  </button>
+                </div>
               </td>
             </tr>
           <% end %>
@@ -86,34 +109,23 @@
       </table>
     </div>
 
-    <!-- Summary Statistics -->
-    <div class="summary-bar">
-      <div class="flex justify-between items-center text-sm">
-        <div class="summary-stat">
-          <span class="summary-label">Total Projects:</span>
-          <span class="summary-badge summary-badge-primary"><%= @projects.count %></span>
-        </div>
-        <div class="summary-stat">
-          <span class="summary-label">Industries:</span>
-          <span class="summary-badge summary-badge-secondary"><%= @projects.pluck(:industry).uniq.count %></span>
-        </div>
-        <div class="summary-stat">
-          <span class="summary-label">Total Team Members:</span>
-          <span class="summary-badge summary-badge-accent"><%= @projects.sum(:estimated_team_size) %></span>
-        </div>
+    <!-- Pagination -->
+    <% if @projects.total_pages > 1 %>
+      <div class="mt-6 flex justify-center">
+        <%= paginate @projects, theme: 'twitter' %>
       </div>
-    </div>
+    <% end %>
   </div>
 <% else %>
   <div class="card-empty animate-scale-in">
     <div class="max-w-md mx-auto">
       <div class="text-6xl mb-6">📋</div>
-      <h2 class="text-2xl font-bold text-white mb-3 text-shadow">No projects yet</h2>
-      <p class="text-gray-300 mb-8">Get started by creating your first project and receive AI-powered recommendations tailored to your needs!</p>
-      <%= link_to new_project_path, { class: "btn btn-primary btn-xl hover-lift" } do %>
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">No projects yet</h2>
+      <p class="text-gray-600 mb-8">Get started by creating your first project and receive AI-powered recommendations tailored to your needs!</p>
+      <button class="btn btn-accent btn-xl hover-lift" data-action="showNewProjectModal">
         <span class="text-2xl">🚀</span>
         <span>Create Your First Project</span>
-      <% end %>
+      </button>
     </div>
   </div>
 <% end %>

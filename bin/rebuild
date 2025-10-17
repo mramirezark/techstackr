@@ -1,0 +1,158 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+def puts_header(message)
+  puts "\n" + "=" * 60
+  puts "  #{message}"
+  puts "=" * 60
+end
+
+def puts_step(message)
+  puts "\n▶ #{message}"
+end
+
+def puts_success(message)
+  puts "✅ #{message}"
+end
+
+def puts_error(message)
+  puts "❌ #{message}"
+end
+
+def puts_warning(message)
+  puts "⚠️  #{message}"
+end
+
+FileUtils.chdir APP_ROOT do
+  puts_header("🚀 TECHSTACKR COMPLETE REBUILD")
+  puts "This will completely rebuild your TechStackr application"
+  puts "including dependencies, database, and all assets."
+  
+  # Ask for confirmation unless --force flag is provided
+  unless ARGV.include?("--force")
+    puts "\n⚠️  This will:"
+    puts "   • Reinstall all gems"
+    puts "   • Reset your database (all data will be lost!)"
+    puts "   • Clean and rebuild all assets"
+    puts "   • Clear logs and temporary files"
+    
+    print "\nAre you sure you want to continue? (y/N): "
+    response = STDIN.gets.chomp.downcase
+    unless response == 'y' || response == 'yes'
+      puts "❌ Rebuild cancelled."
+      exit 0
+    end
+  end
+
+  begin
+    puts_header("1. CLEANING EXISTING BUILD")
+    puts_step("Stopping any running processes...")
+    system("pkill -f 'rails server'", exception: false)
+    system("pkill -f 'tailwindcss'", exception: false)
+    system("pkill -f 'foreman'", exception: false)
+    puts_success("Processes stopped")
+
+    puts_step("Cleaning old logs and temp files...")
+    system! "bin/rails log:clear tmp:clear"
+    puts_success("Logs and temp files cleared")
+
+    puts_header("2. REINSTALLING DEPENDENCIES")
+    puts_step("Removing old bundle...")
+    FileUtils.rm_rf("vendor/bundle") if Dir.exist?("vendor/bundle")
+    puts_success("Old bundle removed")
+
+    puts_step("Installing gems...")
+    system! "bundle install"
+    puts_success("Gems installed")
+
+    puts_header("3. DATABASE REBUILD")
+    puts_step("Dropping database...")
+    system! "bin/rails db:drop"
+    puts_success("Database dropped")
+
+    puts_step("Creating database...")
+    system! "bin/rails db:create"
+    puts_success("Database created")
+
+    puts_step("Running migrations...")
+    system! "bin/rails db:migrate"
+    puts_success("Migrations completed")
+
+    puts_step("Seeding database...")
+    system! "bin/rails db:seed"
+    puts_success("Database seeded")
+
+    puts_header("4. ASSET REBUILD")
+    puts_step("Cleaning old assets...")
+    system! "bin/rails assets:clobber"
+    system! "bin/rails tailwindcss:clobber"
+    puts_success("Old assets cleaned")
+
+    puts_step("Building Tailwind CSS...")
+    system! "bin/rails tailwindcss:build"
+    puts_success("Tailwind CSS built")
+
+    puts_step("Precompiling assets...")
+    system! "bin/rails assets:precompile"
+    puts_success("Assets precompiled")
+
+    puts_header("5. CODE QUALITY CHECK")
+    puts_step("Running RuboCop...")
+    begin
+      system! "bundle exec rubocop"
+      puts_success("RuboCop passed")
+    rescue => e
+      puts_warning("RuboCop found issues: #{e.message}")
+    end
+
+    puts_step("Running Brakeman security scan...")
+    begin
+      system! "bundle exec brakeman --quiet"
+      puts_success("Brakeman passed")
+    rescue => e
+      puts_warning("Brakeman found issues: #{e.message}")
+    end
+
+    puts_header("6. TESTING")
+    puts_step("Running test suite...")
+    begin
+      system! "bin/rails test"
+      puts_success("All tests passed")
+    rescue => e
+      puts_warning("Some tests failed: #{e.message}")
+    end
+
+    puts_header("🎉 REBUILD COMPLETE!")
+    puts_success("Your TechStackr application has been completely rebuilt")
+    puts "\nNext steps:"
+    puts "  • Run 'bin/dev' to start the development server"
+    puts "  • Visit http://localhost:3000 to see your application"
+    puts "  • Check the logs in log/development.log if needed"
+
+    # Ask if user wants to start the server
+    unless ARGV.include?("--no-server")
+      if STDIN.tty?
+        print "\nWould you like to start the development server now? (Y/n): "
+        response = STDIN.gets&.chomp&.downcase
+        if response.nil? || response.empty? || response == 'y' || response == 'yes'
+          puts_step("Starting development server...")
+          exec "bin/dev"
+        end
+      end
+    end
+
+  rescue => e
+    puts_header("❌ REBUILD FAILED")
+    puts_error("An error occurred during the rebuild process:")
+    puts "   #{e.message}"
+    puts "\nPlease check the error above and try again."
+    puts "You may need to manually fix issues before running rebuild again."
+    exit 1
+  end
+end

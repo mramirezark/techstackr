@@ -1,4 +1,4 @@
-class AddUserIdToProjects < ActiveRecord::Migration[7.2]
+class AddUserIdToProjects < ActiveRecord::Migration[8.0]
   def change
     add_reference :projects, :user, null: false, foreign_key: true
   end

@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+
+puts <<~HELP
+  🚀 TECHSTACKR - DEVELOPMENT COMMANDS
+  =====================================
+
+  📦 SETUP & REBUILD COMMANDS:
+  -----------------------------
+  bin/setup           - Initial setup (install deps, setup DB, start server)
+  bin/rebuild         - Complete rebuild (everything from scratch)
+  bin/quick-rebuild   - Quick rebuild (assets + deps, keep database)
+  bin/rebuild-assets  - Asset-only rebuild (CSS/JS only)
+
+  🚀 DEVELOPMENT COMMANDS:
+  ------------------------
+  bin/dev             - Start development server (Rails + Tailwind)
+  bin/rails server    - Start Rails server only
+  bin/rails console   - Open Rails console
+
+  🗄️  DATABASE COMMANDS:
+  ----------------------
+  bin/rails db:create     - Create database
+  bin/rails db:migrate    - Run migrations
+  bin/rails db:rollback   - Rollback last migration
+  bin/rails db:reset      - Reset database (drop/create/migrate/seed)
+  bin/rails db:seed       - Seed database
+  bin/rails dbconsole     - Database console
+
+  🎨 ASSET COMMANDS:
+  ------------------
+  bin/rails tailwindcss:watch    - Watch CSS changes (auto-rebuild)
+  bin/rails tailwindcss:build    - Build CSS once
+  bin/rails tailwindcss:clobber  - Clean CSS build
+  bin/rails assets:precompile    - Build for production
+  bin/rails assets:clobber       - Clean precompiled assets
+
+  🧪 TESTING & QUALITY:
+  ---------------------
+  bin/rails test           - Run all tests
+  bin/rails test:system    - Run system tests
+  bundle exec rubocop      - Code style check
+  bundle exec brakeman     - Security scan
+
+  📋 COMMON WORKFLOWS:
+  --------------------
+  
+  🆕 First time setup:
+     bin/setup
+  
+  🔄 Daily development:
+     bin/dev
+  
+  🐛 When things break:
+     bin/quick-rebuild
+  
+  🚀 Before deployment:
+     bin/rebuild-assets
+     bin/rails db:migrate
+  
+  🔥 Nuclear option (everything broken):
+     bin/rebuild --force
+
+  💡 TIPS:
+  - Use 'bin/dev' for daily development
+  - Tailwind CSS auto-rebuilds when watching
+  - JavaScript modules don't need rebuilding
+  - Always run rubocop/brakeman before committing
+  - Use 'bin/rails console' for debugging
+
+  🆘 NEED HELP?
+  -------------
+  - Check log/development.log for errors
+  - Use 'bin/rails console' to debug
+  - Run 'bin/rebuild' if everything seems broken
+  - Check .env file for missing environment variables
+
+HELP

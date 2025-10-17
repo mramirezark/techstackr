@@ -18,12 +18,12 @@ default: &default
 
 development:
   <<: *default
-  database: techstackr_development
+  database: <%= ENV.fetch("DB_NAME") { "techstackr" } %>_development
 
 test:
   <<: *default
-  database: techstackr_test
+  database: <%= ENV.fetch("DB_NAME") { "techstackr" } %>_test
 
 production:
   <<: *default
-  database: techstackr_production
+  database: <%= ENV.fetch("DB_NAME") { "techstackr" } %>_production

@@ -18,8 +18,8 @@
         <!-- Left Column - Basic Info -->
         <div class="space-y-6">
           <!-- Project Status -->
-          <div class="bg-slate-700/50 rounded-lg p-4">
-            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Status</h3>
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Status</h3>
             <% case @project.status %>
             <% when "pending" %>
               <span class="badge badge-warning badge-lg">⏳ Pending</span>
@@ -33,62 +33,62 @@
           </div>
 
           <!-- Project Details -->
-          <div class="bg-slate-700/50 rounded-lg p-4">
-            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Project Details</h3>
+          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Project Details</h3>
             <div class="space-y-3">
               <div class="flex justify-between items-center">
-                <span class="text-gray-400">Industry:</span>
+                <span class="text-gray-600">Industry:</span>
                 <span class="badge badge-primary"><%= @project.industry %></span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-400">Type:</span>
+                <span class="text-gray-600">Type:</span>
                 <span class="badge badge-secondary"><%= @project.project_type.gsub('_', ' ').titleize %></span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-400">Team Size:</span>
+                <span class="text-gray-600">Team Size:</span>
                 <span class="badge badge-neutral"><%= @project.estimated_team_size %> <%= @project.estimated_team_size == 1 ? 'person' : 'people' %></span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-400">Created:</span>
-                <span class="text-white"><%= @project.created_at.strftime("%B %d, %Y") %></span>
+                <span class="text-gray-600">Created:</span>
+                <span class="text-gray-900"><%= @project.created_at.strftime("%B %d, %Y") %></span>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Right Column - Description -->
-        <div class="bg-slate-700/50 rounded-lg p-4">
-          <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Description</h3>
-          <p class="text-gray-300 leading-relaxed"><%= @project.description %></p>
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Description</h3>
+          <p class="text-gray-700 leading-relaxed"><%= @project.description %></p>
         </div>
       </div>
 
       <!-- AI Recommendation Section -->
       <% if @project.recommendation %>
-        <div class="bg-slate-700/50 rounded-lg p-6">
-          <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <span class="text-xl">🤖</span>
             AI Technology Recommendations
           </h3>
           
           <!-- Summary -->
           <div class="mb-6">
-            <h4 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Recommendation Summary</h4>
-            <p class="text-gray-300 leading-relaxed"><%= @project.recommendation.summary %></p>
+            <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Recommendation Summary</h4>
+            <p class="text-gray-700 leading-relaxed"><%= @project.recommendation.summary %></p>
           </div>
 
           <!-- Technologies -->
           <% if @project.recommendation.technologies.any? %>
             <div class="mb-6">
-              <h4 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Recommended Technologies</h4>
+              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Recommended Technologies</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <% @project.recommendation.technologies.each do |tech| %>
-                  <div class="bg-slate-600/50 rounded-lg p-3">
+                  <div class="bg-white rounded-lg p-3 border border-gray-300">
                     <div class="flex items-center justify-between mb-2">
-                      <h5 class="font-semibold text-white"><%= tech.name %></h5>
+                      <h5 class="font-semibold text-gray-900"><%= tech.name %></h5>
                       <span class="badge badge-primary badge-sm"><%= tech.category %></span>
                     </div>
-                    <p class="text-sm text-gray-400"><%= tech.description %></p>
+                    <p class="text-sm text-gray-600"><%= tech.description %></p>
                   </div>
                 <% end %>
               </div>
@@ -98,15 +98,20 @@
           <!-- Team Composition -->
           <% if @project.recommendation.team_members.any? %>
             <div>
-              <h4 class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">Recommended Team Composition</h4>
+              <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Recommended Team Composition</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <% @project.recommendation.team_members.each do |member| %>
-                  <div class="bg-slate-600/50 rounded-lg p-3">
+                  <div class="bg-white rounded-lg p-3 border border-gray-300">
                     <div class="flex items-center justify-between mb-2">
-                      <h5 class="font-semibold text-white"><%= member.role %></h5>
+                      <h5 class="font-semibold text-gray-900"><%= member.role %></h5>
                       <span class="badge badge-neutral badge-sm"><%= member.count %> <%= member.count == 1 ? 'person' : 'people' %></span>
                     </div>
-                    <p class="text-sm text-gray-400"><%= member.description %></p>
+                    <% if member.skills.present? %>
+                      <p class="text-sm text-gray-600"><strong>Skills:</strong> <%= member.skills %></p>
+                    <% end %>
+                    <% if member.responsibilities.present? %>
+                      <p class="text-sm text-gray-600 mt-1"><strong>Responsibilities:</strong> <%= member.responsibilities %></p>
+                    <% end %>
                   </div>
                 <% end %>
               </div>
@@ -114,11 +119,16 @@
           <% end %>
         </div>
       <% else %>
-        <div class="bg-slate-700/50 rounded-lg p-6 text-center">
+        <div class="bg-gray-50 rounded-lg p-6 text-center border border-gray-200">
           <div class="text-4xl mb-4">🤖</div>
-          <h3 class="text-lg font-semibold text-white mb-2">No AI Recommendations Yet</h3>
-          <p class="text-gray-300 mb-4">This project hasn't received AI-powered technology recommendations yet.</p>
-          <%= link_to "Generate Recommendations", project_recommendation_path(@project), method: :post, class: "btn btn-primary" %>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">No AI Recommendations Yet</h3>
+          <p class="text-gray-700 mb-4">This project hasn't received AI-powered technology recommendations yet.</p>
+          <button type="button" 
+                  class="btn btn-primary"
+                  data-action="generateRecommendations"
+                  data-project-id="<%= @project.id %>">
+            Get Recommendation
+          </button>
         </div>
       <% end %>
     </div>
@@ -126,7 +136,6 @@
     <!-- Modal Footer -->
     <div class="modal-footer">
       <button class="btn btn-ghost" data-action="click->modal#close">Close</button>
-      <%= link_to "View Full Details", project_path(@project), class: "btn btn-primary" %>
     </div>
   </div>
 </div>

@@ -36,11 +36,17 @@ gem "bootsnap", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# Pagination
+gem "kaminari"
+
 # OpenAI API for AI recommendations
 gem "ruby-openai"
 
 # HTTP client for API calls
 gem "httparty"
+
+# Google Gemini AI (FREE tier - 1500 requests/day, NO credit card needed)
+gem "gemini-ai"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

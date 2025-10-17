@@ -1,4 +1,4 @@
-class CreateMigrationMetadata < ActiveRecord::Migration[7.2]
+class CreateMigrationMetadata < ActiveRecord::Migration[8.0]
   def change
     create_table :migration_metadata do |t|
       t.string :version, null: false

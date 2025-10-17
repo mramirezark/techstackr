@@ -1,34 +1,31 @@
 class AiRecommendationService
   def initialize(project)
     @project = project
-    @client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY", ""))
+    @api_key = ENV.fetch("GEMINI_API_KEY", "")
   end
 
   def generate_recommendation
-    return { error: "OpenAI API key not configured" } if ENV["OPENAI_API_KEY"].blank?
+    return { error: "Google Gemini API key not configured. Get free key at https://makersuite.google.com/app/apikey" } if @api_key.blank?
 
     prompt = build_prompt
 
     begin
-      response = @client.chat(
-        parameters: {
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: "You are a technical consultant specializing in technology stack recommendations and team composition. Provide detailed, practical recommendations in JSON format."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          response_format: { type: "json_object" },
-          temperature: 0.7
-        }
+      client = Gemini.new(
+        credentials: {
+          service: "generative-language-api",
+          api_key: @api_key
+        },
+        options: { model: "gemini-2.5-flash" }
       )
 
-      parse_ai_response(response)
+      result = client.generate_content({
+        contents: { role: "user", parts: { text: prompt } }
+      })
+
+      # Extract the response text
+      full_response = result.dig("candidates", 0, "content", "parts", 0, "text") || ""
+
+      parse_ai_response(full_response)
     rescue StandardError => e
       { error: "AI service error: #{e.message}" }
     end
@@ -38,15 +35,18 @@ class AiRecommendationService
 
   def build_prompt
     <<~PROMPT
-      Based on the following project information, provide technology stack recommendations and team composition:
+      You are a technical consultant specializing in technology stack recommendations and team composition.
 
-      Project Title: #{@project.title}
-      Project Type: #{@project.project_type}
-      Industry: #{@project.industry}
-      Estimated Team Size: #{@project.estimated_team_size} people
-      Description: #{@project.description}
+      Based on the following project information, provide detailed technology stack recommendations and team composition.
 
-      Please provide your response in the following JSON format:
+      Project Details:
+      - Title: #{@project.title}
+      - Project Type: #{@project.project_type}
+      - Industry: #{@project.industry}
+      - Estimated Team Size: #{@project.estimated_team_size} people
+      - Description: #{@project.description}
+
+      IMPORTANT: Respond ONLY with valid JSON in exactly this format (no markdown, no code blocks, just raw JSON):
       {
         "summary": "Brief overview of recommendations tailored to the #{@project.industry} industry",
         "technologies": [
@@ -74,15 +74,29 @@ class AiRecommendationService
       - The #{@project.project_type} project type
 
       Ensure the team composition aligns with the estimated team size of #{@project.estimated_team_size}.
+
+      Remember: Return ONLY the JSON object, no other text.
     PROMPT
   end
 
   def parse_ai_response(response)
-    content = response.dig("choices", 0, "message", "content")
-    return { error: "No response from AI" } unless content
+    content = response.to_s.strip
 
-    JSON.parse(content)
+    return { error: "No response from AI" } unless content.present?
+
+    # Remove markdown code blocks if present (```json ... ```)
+    content = content.gsub(/```json\s*/, "").gsub(/```\s*$/, "").strip
+
+    # Extract JSON from the response
+    json_match = content.match(/\{.*\}/m)
+
+    if json_match
+      JSON.parse(json_match[0])
+    else
+      # If no JSON found, return error with raw response for debugging
+      { error: "No JSON found in response", raw_response: content[0..500] }
+    end
   rescue JSON::ParserError => e
-    { error: "Failed to parse AI response: #{e.message}", raw_response: content }
+    { error: "Failed to parse AI response: #{e.message}", raw_response: content[0..500] }
   end
 end

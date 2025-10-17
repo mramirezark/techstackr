@@ -11,7 +11,11 @@ class RecommendationsController < ApplicationController
 
     if ai_result[:error]
       @project.update(status: :failed)
-      redirect_to @project, alert: "Failed to generate recommendation: #{ai_result[:error]}"
+      if request.xhr?
+        head :unprocessable_entity
+      else
+        redirect_to @project, alert: "Failed to generate recommendation: #{ai_result[:error]}"
+      end
       return
     end
 
@@ -43,13 +47,26 @@ class RecommendationsController < ApplicationController
       end
 
       @project.update(status: :completed)
-      redirect_to @project, notice: "Recommendation successfully generated!"
+
+      if request.xhr?
+        head :ok
+      else
+        redirect_to @project, notice: "Recommendation successfully generated!"
+      end
     else
       @project.update(status: :failed)
-      redirect_to @project, alert: "Failed to save recommendation."
+      if request.xhr?
+        head :unprocessable_entity
+      else
+        redirect_to @project, alert: "Failed to save recommendation."
+      end
     end
   rescue StandardError => e
     @project&.update(status: :failed)
-    redirect_to @project, alert: "An error occurred: #{e.message}"
+    if request.xhr?
+      head :internal_server_error
+    else
+      redirect_to @project, alert: "An error occurred: #{e.message}"
+    end
   end
 end

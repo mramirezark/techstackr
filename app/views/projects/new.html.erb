@@ -1,11 +1,13 @@
 <% content_for :title, "New Project - TechStackr" %>
 
 <div class="container-custom">
-  <div class="card-form animate-fade-in">
-    <div class="mb-8">
-      <h1 class="text-gradient text-3xl font-bold mb-2 text-shadow">Create New Project</h1>
-      <p class="text-gray-300">Describe your project and get AI-powered technology recommendations</p>
-    </div>
+  <div class="dashboard-header animate-fade-in mb-6">
+    <div class="breadcrumb">Pages / Projects</div>
+    <h1 class="page-title">Create New Project</h1>
+    <p class="text-blue-100 mt-2">Describe your project and get AI-powered technology recommendations</p>
+  </div>
+  
+  <div class="card-form">
 
     <%= form_with model: @project, local: true, class: "form-group" do |form| %>
       <% if @project.errors.any? %>

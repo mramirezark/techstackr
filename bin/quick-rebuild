@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+def puts_header(message)
+  puts "\n" + "=" * 50
+  puts "  #{message}"
+  puts "=" * 50
+end
+
+def puts_step(message)
+  puts "\n▶ #{message}"
+end
+
+def puts_success(message)
+  puts "✅ #{message}"
+end
+
+FileUtils.chdir APP_ROOT do
+  puts_header("⚡ QUICK REBUILD")
+  puts "Rebuilding assets and dependencies without database reset"
+
+  begin
+    puts_step("Stopping running processes...")
+    system("pkill -f 'rails server'", exception: false)
+    system("pkill -f 'tailwindcss'", exception: false)
+    puts_success("Processes stopped")
+
+    puts_step("Updating gems...")
+    system! "bundle install"
+    puts_success("Gems updated")
+
+    puts_step("Running pending migrations...")
+    system! "bin/rails db:migrate"
+    puts_success("Migrations completed")
+
+    puts_step("Cleaning assets...")
+    system! "bin/rails assets:clobber"
+    system! "bin/rails tailwindcss:clobber"
+    puts_success("Assets cleaned")
+
+    puts_step("Rebuilding Tailwind CSS...")
+    system! "bin/rails tailwindcss:build"
+    puts_success("Tailwind CSS rebuilt")
+
+    puts_step("Precompiling assets...")
+    system! "bin/rails assets:precompile"
+    puts_success("Assets precompiled")
+
+    puts_step("Clearing logs...")
+    system! "bin/rails log:clear"
+    puts_success("Logs cleared")
+
+    puts_header("🎉 QUICK REBUILD COMPLETE!")
+    puts_success("Application rebuilt successfully")
+
+    # Ask if user wants to start the server
+    if STDIN.tty?
+      print "\nWould you like to start the development server? (Y/n): "
+      response = STDIN.gets&.chomp&.downcase
+      if response.nil? || response.empty? || response == 'y' || response == 'yes'
+        puts_step("Starting development server...")
+        exec "bin/dev"
+      end
+    end
+
+  rescue => e
+    puts_header("❌ QUICK REBUILD FAILED")
+    puts "Error: #{e.message}"
+    puts "\nTry running 'bin/rebuild' for a complete rebuild."
+    exit 1
+  end
+end

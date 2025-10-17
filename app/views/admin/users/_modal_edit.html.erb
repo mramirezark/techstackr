@@ -1,0 +1,95 @@
+<div class="modal-overlay hidden" data-modal-target="overlay" data-action="click->modal#closeOnBackdrop">
+  <div class="modal-container modal-scale-in" data-modal-target="container" style="max-width: 600px; width: 95vw;">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="text-2xl">✏️</span>
+        <span>Edit User</span>
+      </div>
+      <button class="modal-close" data-action="click->modal#close" aria-label="Close modal">
+        <span class="text-xl">✕</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="text-center mb-6">
+        <div class="user-avatar mx-auto mb-4" style="width: 60px; height: 60px; font-size: 1.5rem;">
+          <%= @user.username.first.upcase %>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-2"><%= @user.username %></h3>
+        <p class="text-gray-600">Update user information and permissions</p>
+      </div>
+
+      <%= form_with model: [ :admin, @user ], local: false, id: "edit-user-form", class: "form-group" do |form| %>
+        <div id="form-errors" class="hidden alert alert-error mb-6">
+          <div class="flex items-start gap-3">
+            <span class="alert-icon">⚠️</span>
+            <div class="flex-1">
+              <h4 class="font-semibold mb-2">Please fix the following errors:</h4>
+              <ul id="error-list" class="list-disc list-inside space-y-1"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :username, "Username", class: "form-label form-label-required" %>
+          <%= form.text_field :username, 
+              placeholder: "e.g., john_doe", 
+              required: true, 
+              class: "form-input hover-lift" %>
+          <p class="form-help">Minimum 3 characters, lowercase letters and underscores only</p>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <%= form.label :password, "New Password", class: "form-label" %>
+            <%= form.password_field :password, 
+                placeholder: "Leave blank to keep current",
+                class: "form-input hover-lift" %>
+            <p class="form-help">Minimum 6 characters (optional)</p>
+          </div>
+
+          <div class="form-field">
+            <%= form.label :password_confirmation, "Confirm New Password", class: "form-label" %>
+            <%= form.password_field :password_confirmation, 
+                placeholder: "Confirm new password",
+                class: "form-input hover-lift" %>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :role, "User Role", class: "form-label form-label-required" %>
+          <%= form.select :role, 
+              [["Regular User", "user"], ["Administrator", "admin"]], 
+              { selected: @user.role },
+              { required: true, class: "form-select hover-lift" }
+          %>
+          <p class="form-help">Administrators have full system access</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Current User Stats</h4>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Projects:</span>
+              <span class="text-gray-900 font-semibold"><%= @user.projects.count %></span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Created:</span>
+              <span class="text-gray-900 font-semibold"><%= @user.created_at.strftime("%b %d, %Y") %></span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-action="click->modal#close">Cancel</button>
+      <button type="submit" form="edit-user-form" class="btn btn-primary btn-lg hover-lift" id="submit-edit-btn">
+        <span>Update User</span>
+      </button>
+    </div>
+  </div>
+</div>

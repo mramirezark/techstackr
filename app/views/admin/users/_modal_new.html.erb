@@ -1,0 +1,79 @@
+<div class="modal-overlay hidden" data-modal-target="overlay" data-action="click->modal#closeOnBackdrop">
+  <div class="modal-container modal-scale-in" data-modal-target="container" style="max-width: 600px; width: 95vw;">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="text-2xl">👤</span>
+        <span>Add New User</span>
+      </div>
+      <button class="modal-close" data-action="click->modal#close" aria-label="Close modal">
+        <span class="text-xl">✕</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="text-center mb-6">
+        <p class="text-gray-600">Create a new user account with appropriate permissions</p>
+      </div>
+
+      <%= form_with model: [ :admin, @user ], local: false, id: "new-user-form", class: "form-group" do |form| %>
+        <div id="form-errors" class="hidden alert alert-error mb-6">
+          <div class="flex items-start gap-3">
+            <span class="alert-icon">⚠️</span>
+            <div class="flex-1">
+              <h4 class="font-semibold mb-2">Please fix the following errors:</h4>
+              <ul id="error-list" class="list-disc list-inside space-y-1"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :username, "Username", class: "form-label form-label-required" %>
+          <%= form.text_field :username, 
+              placeholder: "e.g., john_doe", 
+              required: true, 
+              class: "form-input hover-lift" %>
+          <p class="form-help">Minimum 3 characters, lowercase letters and underscores only</p>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <%= form.label :password, "Password", class: "form-label form-label-required" %>
+            <%= form.password_field :password, 
+                placeholder: "Enter password", 
+                required: true,
+                class: "form-input hover-lift" %>
+            <p class="form-help">Minimum 6 characters</p>
+          </div>
+
+          <div class="form-field">
+            <%= form.label :password_confirmation, "Confirm Password", class: "form-label form-label-required" %>
+            <%= form.password_field :password_confirmation, 
+                placeholder: "Confirm password", 
+                required: true,
+                class: "form-input hover-lift" %>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <%= form.label :role, "User Role", class: "form-label form-label-required" %>
+          <%= form.select :role, 
+              [["Regular User", "user"], ["Administrator", "admin"]], 
+              { prompt: "Select user role" },
+              { required: true, class: "form-select hover-lift" }
+          %>
+          <p class="form-help">Administrators have full system access</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-action="click->modal#close">Cancel</button>
+      <button type="submit" form="new-user-form" class="btn btn-primary btn-lg hover-lift" id="submit-user-btn">
+        <span>Create User</span>
+      </button>
+    </div>
+  </div>
+</div>

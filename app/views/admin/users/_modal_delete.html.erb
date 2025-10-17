@@ -1,0 +1,85 @@
+<div class="modal-overlay hidden" data-modal-target="overlay" data-action="click->modal#closeOnBackdrop">
+  <div class="modal-container modal-scale-in" data-modal-target="container" style="max-width: 500px; width: 95vw;">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="text-2xl">⚠️</span>
+        <span>Delete User</span>
+      </div>
+      <button class="modal-close" data-action="click->modal#close" aria-label="Close modal">
+        <span class="text-xl">✕</span>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="text-center mb-6">
+        <div class="user-avatar mx-auto mb-4" style="width: 80px; height: 80px; font-size: 2rem;">
+          <%= @user.username.first.upcase %>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2"><%= @user.username %></h3>
+        <div class="flex justify-center mb-4">
+          <% if @user.admin? %>
+            <span class="badge badge-primary badge-lg">👑 ADMIN</span>
+          <% else %>
+            <span class="badge badge-success badge-lg">👤 USER</span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+        <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">User Statistics</h4>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Projects:</span>
+            <span class="text-gray-900 font-semibold"><%= @user.projects.count %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Created:</span>
+            <span class="text-gray-900 font-semibold"><%= @user.created_at.strftime("%b %d, %Y") %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-red-50 border border-red-300 rounded-lg p-4 mb-6">
+        <div class="flex items-start gap-3">
+          <span class="text-red-600 text-xl">⚠️</span>
+          <div class="flex-1">
+            <h4 class="font-semibold text-red-800 mb-2">Warning: This action cannot be undone!</h4>
+            <ul class="text-red-700 text-sm space-y-1">
+              <li>• All user projects and data will be permanently deleted</li>
+              <li>• All AI recommendations will be lost</li>
+              <li>• The user account will be completely removed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <p class="text-gray-700 mb-4">Are you sure you want to delete <strong class="text-gray-900"><%= @user.username %></strong>?</p>
+        <p class="text-sm text-gray-600">Type the username to confirm deletion</p>
+      </div>
+
+      <div class="mt-4">
+        <input type="text" 
+               id="confirm-delete-input" 
+               placeholder="Type username to confirm"
+               class="form-input text-center"
+               autocomplete="off">
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-action="click->modal#close">Cancel</button>
+      <button type="button" 
+              class="btn btn-danger btn-lg hover-lift" 
+              id="confirm-delete-btn"
+              data-user-id="<%= @user.id %>"
+              data-username="<%= @user.username %>"
+              disabled>
+        <span>Delete User</span>
+      </button>
+    </div>
+  </div>
+</div>

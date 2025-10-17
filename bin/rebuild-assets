@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+require "fileutils"
+
+APP_ROOT = File.expand_path("..", __dir__)
+
+def system!(*args)
+  system(*args, exception: true)
+end
+
+def puts_step(message)
+  puts "▶ #{message}"
+end
+
+def puts_success(message)
+  puts "✅ #{message}"
+end
+
+FileUtils.chdir APP_ROOT do
+  puts "🔄 Rebuilding Assets..."
+  puts "=" * 30
+
+  begin
+    puts_step("Cleaning old assets...")
+    system! "bin/rails assets:clobber"
+    system! "bin/rails tailwindcss:clobber"
+    puts_success("Assets cleaned")
+
+    puts_step("Building Tailwind CSS...")
+    system! "bin/rails tailwindcss:build"
+    puts_success("Tailwind CSS built")
+
+    puts_step("Precompiling assets...")
+    system! "bin/rails assets:precompile"
+    puts_success("Assets precompiled")
+
+    puts "\n🎉 Asset rebuild complete!"
+
+  rescue => e
+    puts "\n❌ Asset rebuild failed: #{e.message}"
+    exit 1
+  end
+end

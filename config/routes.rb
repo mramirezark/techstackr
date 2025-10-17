@@ -18,16 +18,32 @@ Rails.application.routes.draw do
 
   # Admin routes
   namespace :admin do
-    resources :users
+    resources :users do
+      collection do
+        get :modal_new
+      end
+      member do
+        get :modal_edit
+        get :modal_delete
+      end
+    end
   end
 
   # Application routes
   root "projects#index"
 
-  resources :projects, only: [ :index, :new, :create, :show ] do
+  resources :projects, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
     resource :recommendation, only: [ :create ]
+    collection do
+      get :modal_new
+    end
     member do
       get :modal_details
+      get :modal_edit
+      get :modal_delete
     end
   end
+
+  # Dashboard for all recommendations
+  get "dashboard", to: "projects#dashboard"
 end
