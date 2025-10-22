@@ -26,10 +26,6 @@
         <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Project Details</h4>
         <div class="grid grid-cols-2 gap-4 text-sm">
           <div class="flex justify-between">
-            <span class="text-gray-600">Team Size:</span>
-            <span class="text-gray-900 font-semibold"><%= @project.estimated_team_size %></span>
-          </div>
-          <div class="flex justify-between">
             <span class="text-gray-600">Status:</span>
             <span class="text-gray-900 font-semibold"><%= @project.status.titleize %></span>
           </div>
@@ -41,6 +37,12 @@
             <span class="text-gray-600">Recommendations:</span>
             <span class="text-gray-900 font-semibold"><%= @project.recommendation.present? ? 'Yes' : 'No' %></span>
           </div>
+          <% if @project.recommendation&.recommended_team_size.present? %>
+            <div class="flex justify-between">
+              <span class="text-gray-600">AI Team Size:</span>
+              <span class="text-gray-900 font-semibold"><%= @project.recommendation.recommended_team_size %></span>
+            </div>
+          <% end %>
         </div>
       </div>
 

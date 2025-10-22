@@ -20,9 +20,14 @@ class RecommendationsController < ApplicationController
     end
 
     # Create recommendation and associated records
+    timeline_data = ai_result["estimated_timeline"]
+    timeline_display = timeline_data.is_a?(Hash) ? timeline_data["total_duration"] : timeline_data
+
     @recommendation = @project.build_recommendation(
       ai_response: ai_result.to_json,
-      summary: ai_result["summary"]
+      summary: ai_result["summary"],
+      recommended_team_size: ai_result["recommended_team_size"],
+      estimated_timeline: timeline_display
     )
 
     if @recommendation.save

@@ -6,7 +6,8 @@ class Project < ApplicationRecord
   validates :description, presence: true, length: { minimum: 10, maximum: 1000 }
   validates :project_type, presence: true
   validates :industry, presence: true
-  validates :estimated_team_size, presence: true, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 1000 }
+  # Team size is now recommended by AI, not required from user
+  validates :estimated_team_size, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 1000 }, allow_nil: true
 
   enum :status, { pending: "pending", processing: "processing", completed: "completed", failed: "failed" }, default: :pending
 

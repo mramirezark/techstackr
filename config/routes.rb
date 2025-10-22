@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   # Admin routes
   namespace :admin do
-    resources :users do
+    resources :users, only: [ :index, :create, :update, :destroy ] do
       collection do
         get :modal_new
       end
@@ -32,7 +32,7 @@ Rails.application.routes.draw do
   # Application routes
   root "projects#index"
 
-  resources :projects, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
+  resources :projects, only: [ :index, :create, :edit, :update, :destroy ] do
     resource :recommendation, only: [ :create ]
     collection do
       get :modal_new

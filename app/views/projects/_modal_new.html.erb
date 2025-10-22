@@ -45,35 +45,22 @@
           </div>
         </div>
 
-        <div class="form-grid-2">
-          <div class="form-field">
-            <%= form.label :project_type, "Project Type", class: "form-label form-label-required" %>
-            <%= form.select :project_type, 
-                options_for_select([
-                  ["Web Application", "web_application"],
-                  ["Mobile Application", "mobile_application"],
-                  ["Desktop Application", "desktop_application"],
-                  ["API/Backend Service", "api_backend"],
-                  ["Data Science/ML Project", "data_science"],
-                  ["DevOps/Infrastructure", "devops"],
-                  ["Other", "other"]
-                ]), 
-                { prompt: "Select project type" },
-                { required: true, class: "form-select hover-lift" }
-            %>
-          </div>
-
-          <div class="form-field">
-            <%= form.label :estimated_team_size, "Estimated Team Size", class: "form-label form-label-required" %>
-            <%= form.number_field :estimated_team_size, 
-                placeholder: "e.g., 5",
-                min: 1,
-                max: 1000,
-                required: true,
-                class: "form-input hover-lift"
-            %>
-            <p class="form-help">Number of team members expected</p>
-          </div>
+        <div class="form-field">
+          <%= form.label :project_type, "Project Type", class: "form-label form-label-required" %>
+          <%= form.select :project_type, 
+              options_for_select([
+                ["Web Application", "web_application"],
+                ["Mobile Application", "mobile_application"],
+                ["Desktop Application", "desktop_application"],
+                ["API/Backend Service", "api_backend"],
+                ["Data Science/ML Project", "data_science"],
+                ["DevOps/Infrastructure", "devops"],
+                ["Other", "other"]
+              ]), 
+              { prompt: "Select project type" },
+              { required: true, class: "form-select hover-lift" }
+          %>
+          <p class="form-help">AI will recommend optimal team composition</p>
         </div>
 
         <div class="form-field">

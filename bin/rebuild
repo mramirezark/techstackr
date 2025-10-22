@@ -72,9 +72,23 @@ FileUtils.chdir APP_ROOT do
     puts_success("Gems installed")
 
     puts_header("3. DATABASE REBUILD")
+    puts_step("Terminating active database connections...")
+    system! "bin/rails runner \"ActiveRecord::Base.connection.execute(\\\"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname IN ('techstackr_development', 'techstackr_test') AND pid <> pg_backend_pid();\\\")\""
+    puts_success("Active connections terminated")
+    
     puts_step("Dropping database...")
-    system! "bin/rails db:drop"
-    puts_success("Database dropped")
+    if system("bin/rails db:drop")
+      puts_success("Database dropped")
+    else
+      puts_warning("Standard drop failed, trying with force...")
+      if system("bin/rails db:drop:_unsafe")
+        puts_success("Database dropped (forced)")
+      else
+        puts_error("Failed to drop database. You may need to manually terminate connections.")
+        puts "Try running: bin/rails runner \"ActiveRecord::Base.connection.execute(\\\"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'techstackr_development' AND pid <> pg_backend_pid();\\\")\""
+        exit 1
+      end
+    end
 
     puts_step("Creating database...")
     system! "bin/rails db:create"

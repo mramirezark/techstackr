@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [ :show, :edit, :update, :destroy, :modal_details, :modal_edit, :modal_delete ]
+  before_action :set_project, only: [ :edit, :update, :destroy, :modal_details, :modal_edit, :modal_delete ]
 
   def index
     @projects = current_user.projects.includes(recommendation: [ :technologies, :team_members ])
@@ -44,26 +44,18 @@ class ProjectsController < ApplicationController
                               .count
   end
 
-  def new
-    @project = Project.new
-  end
-
   def create
     @project = current_user.projects.build(project_params)
 
     respond_to do |format|
       if @project.save
-        format.html { redirect_to @project, notice: "Project was successfully created." }
-        format.json { render json: { success: true, redirect_url: project_path(@project) }, status: :created }
+        format.html { redirect_to projects_path, notice: "Project was successfully created." }
+        format.json { render json: { success: true, redirect_url: projects_path }, status: :created }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: { success: false, errors: @project.errors.full_messages }, status: :unprocessable_entity }
       end
     end
-  end
-
-  def show
-    @recommendation = @project.recommendation
   end
 
   def modal_details

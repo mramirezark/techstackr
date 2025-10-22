@@ -176,7 +176,7 @@
   }
   
   .sidebar {
-    @apply w-64 bg-blue-900 shadow-lg border-r border-blue-800 text-white;
+    @apply w-64 bg-blue-900 shadow-lg border-r border-blue-800 text-white sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto;
   }
   
   .main-content {

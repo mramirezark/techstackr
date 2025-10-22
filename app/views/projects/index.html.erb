@@ -24,13 +24,14 @@
       <table class="table">
         <thead class="table-header">
           <tr>
-            <th class="table-header-cell w-2/5">Project</th>
-            <th class="table-header-cell w-32">Industry</th>
-            <th class="table-header-cell w-36">Type</th>
-            <th class="table-header-cell text-center w-24">Team</th>
-            <th class="table-header-cell text-center w-28">Status</th>
-            <th class="table-header-cell w-32">Created</th>
-            <th class="table-header-cell text-center w-24">Actions</th>
+            <th class="table-header-cell w-1/3">Project</th>
+            <th class="table-header-cell w-16">Industry</th>
+            <th class="table-header-cell w-20">Type</th>
+            <th class="table-header-cell text-center w-14">Team</th>
+            <th class="table-header-cell w-16">Timeline</th>
+            <th class="table-header-cell text-center w-16">Status</th>
+            <th class="table-header-cell w-16">Created</th>
+            <th class="table-header-cell text-center w-14">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -39,67 +40,80 @@
               <td class="table-cell-title">
                 <div class="flex flex-col">
                   <span class="font-semibold text-gray-900 text-sm"><%= project.title %></span>
-                  <span class="table-cell-description"><%= truncate(project.description, length: 60) %></span>
+                  <span class="table-cell-description text-xs"><%= truncate(project.description, length: 60) %></span>
                 </div>
               </td>
               <td class="table-cell-compact">
-                <span class="badge badge-primary badge-sm">
+                <span class="badge badge-primary badge-xs text-xs">
                   <%= project.industry %>
                 </span>
               </td>
               <td class="table-cell-compact">
-                <span class="badge badge-secondary badge-sm">
+                <span class="badge badge-secondary badge-xs text-xs">
                   <%= project.project_type.gsub('_', ' ').titleize %>
                 </span>
               </td>
               <td class="table-cell-compact text-center">
-                <div class="flex flex-col items-center">
-                  <span class="text-sm font-bold text-gray-900"><%= project.estimated_team_size %></span>
-                  <span class="text-xs text-gray-600"><%= project.estimated_team_size == 1 ? 'person' : 'people' %></span>
-                </div>
+                <% if project.recommendation&.recommended_team_size.present? %>
+                  <div class="flex flex-col items-center">
+                    <span class="text-xs font-bold text-gray-900"><%= project.recommendation.recommended_team_size %></span>
+                    <span class="text-xs text-gray-600"><%= project.recommendation.recommended_team_size == 1 ? 'person' : 'people' %></span>
+                  </div>
+                <% else %>
+                  <span class="text-gray-400 text-xs">—</span>
+                <% end %>
+              </td>
+              <td class="table-cell-compact">
+                <% if project.recommendation&.estimated_timeline.present? %>
+                  <span class="badge badge-warning badge-xs text-xs">
+                    ⏱️ <%= project.recommendation.estimated_timeline %>
+                  </span>
+                <% else %>
+                  <span class="text-gray-400 text-xs">—</span>
+                <% end %>
               </td>
               <td class="table-cell-compact text-center">
                 <% case project.status %>
                 <% when "pending" %>
-                  <span class="badge badge-warning badge-sm">⏳ Pending</span>
+                  <span class="badge badge-warning badge-xs text-xs">⏳ Pending</span>
                 <% when "processing" %>
-                  <span class="badge badge-info badge-sm">⚙️ Processing</span>
+                  <span class="badge badge-info badge-xs text-xs">⚙️ Processing</span>
                 <% when "completed" %>
-                  <span class="badge badge-success badge-sm">✓ Completed</span>
+                  <span class="badge badge-success badge-xs text-xs">✓ Completed</span>
                 <% when "failed" %>
-                  <span class="badge badge-danger badge-sm">✗ Failed</span>
+                  <span class="badge badge-danger badge-xs text-xs">✗ Failed</span>
                 <% end %>
               </td>
               <td class="table-cell-compact">
                 <span class="text-xs text-gray-600"><%= project.created_at.strftime("%b %d, %Y") %></span>
               </td>
               <td class="table-cell-compact text-center">
-                <div class="flex justify-center gap-1">
+                <div class="flex justify-center gap-0.5">
                   <button 
-                    class="btn btn-ghost btn-sm hover-lift" 
+                    class="btn btn-ghost btn-xs hover-lift p-1" 
                     data-action="showProjectDetails"
                     data-project-id="<%= project.id %>"
                     title="View Details"
                   >
-                    <span>👁️</span>
+                    <span class="text-[10px]">👁️</span>
                   </button>
                   <button 
-                    class="btn btn-ghost btn-sm hover-lift" 
+                    class="btn btn-ghost btn-xs hover-lift p-1" 
                     data-action="showEditProjectModal"
                     data-project-id="<%= project.id %>"
                     data-project-title="<%= project.title %>"
                     title="Edit Project"
                   >
-                    <span>✏️</span>
+                    <span class="text-[10px]">✏️</span>
                   </button>
                   <button 
-                    class="btn btn-ghost btn-sm hover-lift text-red-600" 
+                    class="btn btn-ghost btn-xs hover-lift p-1 text-red-600" 
                     data-action="showDeleteProjectModal"
                     data-project-id="<%= project.id %>"
                     data-project-title="<%= project.title %>"
                     title="Delete Project"
                   >
-                    <span>🗑️</span>
+                    <span class="text-[10px]">🗑️</span>
                   </button>
                 </div>
               </td>
@@ -112,7 +126,13 @@
     <!-- Pagination -->
     <% if @projects.total_pages > 1 %>
       <div class="mt-6 flex justify-center">
-        <%= paginate @projects, theme: 'twitter' %>
+        <%= paginate @projects, 
+            theme: 'default',
+            window: 2,
+            outer_window: 1,
+            left: 0,
+            right: 0
+        %>
       </div>
     <% end %>
   </div>

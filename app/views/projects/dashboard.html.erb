@@ -167,7 +167,12 @@
               <div class="flex flex-wrap gap-1 mb-2">
                 <span class="badge badge-primary badge-sm"><%= project.industry %></span>
                 <span class="badge badge-secondary badge-sm"><%= project.project_type.gsub('_', ' ').titleize %></span>
-                <span class="badge badge-neutral badge-sm">👥 <%= project.estimated_team_size %></span>
+                <% if project.recommendation&.recommended_team_size.present? %>
+                  <span class="badge badge-success badge-sm">👥 <%= project.recommendation.recommended_team_size %></span>
+                <% end %>
+                <% if project.recommendation&.estimated_timeline.present? %>
+                  <span class="badge badge-warning badge-sm">⏱️ <%= project.recommendation.estimated_timeline %></span>
+                <% end %>
                 <span class="badge badge-info badge-sm">📅 <%= project.created_at.strftime("%b %d") %></span>
               </div>
               <p class="text-gray-600 text-xs line-clamp-2"><%= project.description %></p>

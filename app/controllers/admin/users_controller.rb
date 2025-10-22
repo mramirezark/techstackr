@@ -6,10 +6,6 @@ class Admin::UsersController < ApplicationController
     @users = User.all.order(created_at: :desc)
   end
 
-  def new
-    @user = User.new
-  end
-
   def modal_new
     @user = User.new
 

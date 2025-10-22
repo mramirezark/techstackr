@@ -354,15 +354,10 @@ export class ProjectModals {
           // Update the projects table
           this.updateProjectStatusInTable(projectId, 'completed');
           
-          // Wait a moment then close modal and show success message
+          // Wait a moment then reload page to show updated data (team size, timeline, etc.)
           setTimeout(() => {
-            const modalContainer = document.getElementById('modal-content');
-            if (modalContainer) {
-              ModalUtils.hideModal(modalContainer.querySelector('.modal-overlay'));
-            }
-            
-            // Show success notification
-            this.showSuccessNotification('Recommendations generated successfully!');
+            // Reload the page to show the updated recommendation data
+            window.location.reload();
           }, 2000);
           
         } else {

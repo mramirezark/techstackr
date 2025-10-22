@@ -43,22 +43,29 @@ sample_projects_admin = [
     title: "Healthcare Patient Portal",
     description: "A HIPAA-compliant web application for patients to book appointments, view medical records, and securely message with healthcare providers. The system needs to integrate with existing EHR systems via HL7/FHIR APIs, support role-based access control for patients, doctors, and administrators, and handle approximately 10,000 active users with real-time appointment availability updates.",
     project_type: "web_application",
-    industry: "Healthcare",
-    estimated_team_size: 8
+    industry: "Healthcare"
   },
   {
     title: "E-commerce Marketplace Platform",
     description: "A multi-vendor marketplace connecting buyers and sellers with integrated payment processing, inventory management, order tracking, and seller analytics dashboard. Features include product search with filters, shopping cart, secure checkout with multiple payment options, review system, and automated email notifications. Expected to handle 50,000 daily active users with peak traffic during sales events.",
     project_type: "web_application",
-    industry: "E-commerce",
-    estimated_team_size: 12
+    industry: "E-commerce"
   },
   {
     title: "FinTech Investment Portfolio Tracker",
     description: "A mobile application for iOS and Android that allows users to track their investment portfolios across multiple accounts and asset classes. Features include real-time stock quotes, portfolio performance analytics, risk assessment, tax optimization suggestions, and secure authentication with biometric support. Must comply with financial regulations and handle sensitive financial data with encryption.",
     project_type: "mobile_application",
-    industry: "Finance",
-    estimated_team_size: 10
+    industry: "Finance"
+  },
+  {
+    title: "Bridging Agent",
+    description: "AI Agents system that will run the bridging process for a software development company.
+It should have agents that do all of the following:
+Get a Lead’s information from Zoho, including documentation and introduction call.
+Use the Lead’s information to generate a proposed team composition, taking into account our available talent pool, which is saved on a database.
+Use the Lead’s information to generate a proposal, using the company’s standards for team composition and processes.",
+    project_type: "api_backend",
+    industry: "Technology"
   }
 ]
 
@@ -67,36 +74,31 @@ sample_projects_demo = [
     title: "Online Learning Management System",
     description: "A comprehensive LMS for educational institutions with features for course creation, student enrollment, assignment submission, grading, video lectures, discussion forums, and progress tracking. Needs to support 5,000 concurrent users during peak hours, integrate with video conferencing tools, and provide accessibility features for students with disabilities.",
     project_type: "web_application",
-    industry: "Education",
-    estimated_team_size: 15
+    industry: "Education"
   },
   {
     title: "Restaurant Reservation & POS System",
     description: "An integrated system combining table reservations, point-of-sale, inventory management, and customer loyalty programs for restaurant chains. Features include real-time table availability, waitlist management, order processing, kitchen display system, payment processing, and analytics for business insights. Needs offline capability for POS terminals.",
     project_type: "web_application",
-    industry: "Travel & Hospitality",
-    estimated_team_size: 6
+    industry: "Travel & Hospitality"
   },
   {
     title: "Real Estate Property Management Platform",
     description: "A web platform for property managers to handle tenant applications, lease agreements, rent collection, maintenance requests, and property listings. Includes tenant portal, automated rent reminders, document management, financial reporting, and integration with payment gateways. Expected to manage 1,000+ properties with 5,000+ active tenants.",
     project_type: "web_application",
-    industry: "Real Estate",
-    estimated_team_size: 7
+    industry: "Real Estate"
   },
   {
     title: "IoT Manufacturing Monitoring System",
     description: "A real-time monitoring system for manufacturing facilities with IoT sensor integration, predictive maintenance alerts, production analytics, and quality control tracking. Backend service processes sensor data from 500+ devices, detects anomalies using machine learning, and provides REST API for dashboard integrations. Requires high availability and low latency.",
     project_type: "api_backend",
-    industry: "Manufacturing",
-    estimated_team_size: 9
+    industry: "Manufacturing"
   },
   {
     title: "Content Streaming Platform",
     description: "A Netflix-like streaming service for independent content creators with video upload, transcoding, adaptive bitrate streaming, user subscriptions, content recommendations, and creator analytics. Needs CDN integration, DRM for content protection, and support for 100,000+ concurrent streams. Mobile apps for iOS and Android with offline viewing capability.",
     project_type: "web_application",
-    industry: "Entertainment",
-    estimated_team_size: 20
+    industry: "Entertainment"
   }
 ]
 
