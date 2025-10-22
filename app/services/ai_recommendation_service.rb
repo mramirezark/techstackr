@@ -10,22 +10,36 @@ class AiRecommendationService
     prompt = build_prompt
 
     begin
-      client = Gemini.new(
-        credentials: {
-          service: "generative-language-api",
-          api_key: @api_key
-        },
-        options: { model: "gemini-2.5-flash" }
-      )
+      # Use direct HTTP calls to Gemini API (no native dependencies)
+      require "net/http"
+      require "uri"
+      require "json"
 
-      result = client.generate_content({
-        contents: { role: "user", parts: { text: prompt } }
-      })
+      uri = URI("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=#{@api_key}")
 
-      # Extract the response text
-      full_response = result.dig("candidates", 0, "content", "parts", 0, "text") || ""
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
 
-      parse_ai_response(full_response)
+      request = Net::HTTP::Post.new(uri)
+      request["Content-Type"] = "application/json"
+
+      request.body = {
+        contents: [ {
+          parts: [ {
+            text: prompt
+          } ]
+        } ]
+      }.to_json
+
+      response = http.request(request)
+
+      if response.code == "200"
+        result = JSON.parse(response.body)
+        full_response = result.dig("candidates", 0, "content", "parts", 0, "text") || ""
+        parse_ai_response(full_response)
+      else
+        { error: "Gemini API error: #{response.code} - #{response.body}" }
+      end
     rescue StandardError => e
       { error: "AI service error: #{e.message}" }
     end

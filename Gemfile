@@ -49,7 +49,7 @@ gem "ruby-openai"
 gem "httparty"
 
 # Google Gemini AI (FREE tier - 1500 requests/day, NO credit card needed)
-gem "gemini-ai", "~> 4.3.0"
+# gem "gemini-ai", "~> 4.3.0"  # Commented out - using direct HTTP API calls instead
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
