@@ -1,0 +1,13 @@
+[build]
+ruby_version = "3.4.5"
+bundle_without = "development test"
+
+[build.dependencies]
+system_packages = [
+  "libcurl4-openssl-dev",
+  "build-essential",
+  "libssl-dev"
+]
+
+[deploy]
+start_command = "bundle exec rails server -p $PORT -e production"

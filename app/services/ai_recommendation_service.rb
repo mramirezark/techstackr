@@ -10,9 +10,6 @@ class AiRecommendationService
     prompt = build_prompt
 
     begin
-      # Try to load the Gemini gem
-      require "gemini"
-
       client = Gemini.new(
         credentials: {
           service: "generative-language-api",
@@ -29,8 +26,6 @@ class AiRecommendationService
       full_response = result.dig("candidates", 0, "content", "parts", 0, "text") || ""
 
       parse_ai_response(full_response)
-    rescue LoadError => e
-      { error: "Gemini AI gem not available: #{e.message}. Please check gem installation." }
     rescue StandardError => e
       { error: "AI service error: #{e.message}" }
     end
