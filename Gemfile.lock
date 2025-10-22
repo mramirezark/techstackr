@@ -427,7 +427,7 @@ DEPENDENCIES
   capybara
   debug
   dotenv-rails
-  gemini-ai
+  gemini-ai (~> 4.3.0)
   httparty
   importmap-rails
   jbuilder
