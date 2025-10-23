@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+echo "🚀 Starting Railway deployment..."
+
+# Set environment variables
+export RAILS_ENV=production
+export RAILS_SERVE_STATIC_FILES=true
+export RAILS_LOG_TO_STDOUT=true
+
+# Check if we have required environment variables
+if [ -z "$DATABASE_URL" ]; then
+  echo "❌ DATABASE_URL not set"
+  exit 1
+fi
+
+if [ -z "$SECRET_KEY_BASE" ]; then
+  echo "❌ SECRET_KEY_BASE not set"
+  exit 1
+fi
+
+echo "✅ Environment variables check passed"
+
+# Run database migrations if needed
+echo "🗄️  Running database migrations..."
+bundle exec rails db:migrate || echo "⚠️  Migration failed, continuing..."
+
+# Start the server
+echo "🌐 Starting Rails server on port $PORT..."
+exec bundle exec rails server -b 0.0.0.0 -p $PORT -e production
